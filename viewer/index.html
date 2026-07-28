@@ -194,10 +194,16 @@ async function loadFileTree(branch) {
   return data.tree.filter((entry) => entry.type === 'blob').map((entry) => entry.path);
 }
 
+function escapeHtml(str) {
+  const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+  return str.replace(/[&<>"']/g, (c) => map[c]);
+}
+
 function renderTreeNode(name, subtree) {
-  if (subtree === null) return `<li>${name}</li>`;
+  const escapedName = escapeHtml(name);
+  if (subtree === null) return `<li>${escapedName}</li>`;
   const children = Object.entries(subtree).map(([k, v]) => renderTreeNode(k, v)).join('');
-  return `<li>${name}/<ul>${children}</ul></li>`;
+  return `<li>${escapedName}/<ul>${children}</ul></li>`;
 }
 
 function renderTreeView(container, paths) {
