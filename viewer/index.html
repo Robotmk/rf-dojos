@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>🥋 RFUGM Dojo Viewer</title>
+<script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github.min.css">
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/highlight.min.js"></script>
+<style>
+  :root { --border: #d0d7de; --bg-nav: #f6f8fa; --accent: #0969da; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: -apple-system, Segoe UI, sans-serif; color: #1f2328; }
+  header { display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); }
+  header h1 { font-size: 1.1rem; margin: 0; }
+  #layout { display: grid; grid-template-columns: 240px 1fr; height: calc(100vh - 52px); }
+  #rounds-nav { border-right: 1px solid var(--border); background: var(--bg-nav); overflow-y: auto; padding: 0.5rem; }
+  #rounds-nav ul { list-style: none; margin: 0; padding: 0; }
+  #rounds-nav li { padding: 0.5rem 0.75rem; border-radius: 6px; cursor: pointer; }
+  #rounds-nav li.active { background: var(--accent); color: white; }
+  #main { display: flex; flex-direction: column; overflow: hidden; }
+  #participant-tabs { display: flex; gap: 0.25rem; padding: 0.5rem 1rem; border-bottom: 1px solid var(--border); overflow-x: auto; }
+  #participant-tabs button { border: 1px solid var(--border); background: white; border-radius: 6px; padding: 0.35rem 0.75rem; cursor: pointer; }
+  #participant-tabs button.active { background: var(--accent); color: white; border-color: var(--accent); }
+  #content { flex: 1; overflow: auto; padding: 1rem; }
+  #status-bar { padding: 0.25rem 1rem; font-size: 0.85rem; color: #57606a; border-top: 1px solid var(--border); }
+  dialog#token-dialog { border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; }
+  dialog#token-dialog input { width: 320px; padding: 0.4rem; }
+  .highlight-line { background: #fff8c5; }
+</style>
+</head>
+<body>
+<header>
+  <h1>🥋 RFUGM Dojo Viewer</h1>
+  <span id="dojo-title"></span>
+</header>
+<div id="layout">
+  <nav id="rounds-nav"><ul id="rounds-list"></ul></nav>
+  <div id="main">
+    <div id="participant-tabs"></div>
+    <div id="content"></div>
+    <div id="status-bar"></div>
+  </div>
+</div>
+<dialog id="token-dialog">
+  <form method="dialog" id="token-form">
+    <p>GitHub Personal Access Token eingeben (Scope <code>public_repo</code>).<br>
+    Wird nur lokal in diesem Browser gespeichert, nie im Repo.</p>
+    <input type="password" id="token-input" placeholder="ghp_...">
+    <button type="submit">Speichern</button>
+  </form>
+</dialog>
+<script>
+const TOKEN_KEY = 'rf_dojos_github_token';
+
+function getUrlParam(name) {
+  return new URLSearchParams(window.location.search).get(name);
+}
+
+function getToken() {
+  return localStorage.getItem(TOKEN_KEY) || '';
+}
+
+function setToken(value) {
+  localStorage.setItem(TOKEN_KEY, value);
+}
+
+const state = {
+  dojoId: getUrlParam('dojo'),
+  token: getToken(),
+  config: null,
+  prs: [],
+  currentRoundIndex: 0,
+  currentParticipantIndex: 0,
+};
+
+function render() {
+  document.getElementById('dojo-title').textContent = state.config ? state.config.dojo.title : '';
+}
+
+function ensureToken() {
+  return new Promise((resolve) => {
+    if (state.token) return resolve(state.token);
+    const dialog = document.getElementById('token-dialog');
+    dialog.showModal();
+    document.getElementById('token-form').addEventListener('submit', () => {
+      const value = document.getElementById('token-input').value.trim();
+      setToken(value);
+      state.token = value;
+      resolve(value);
+    }, { once: true });
+  });
+}
+
+async function init() {
+  await ensureToken();
+  render();
+}
+
+init();
+</script>
+</body>
+</html>
