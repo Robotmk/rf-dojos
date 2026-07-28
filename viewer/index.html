@@ -4,8 +4,6 @@
 <meta charset="UTF-8">
 <title>🥋 RFUGM Dojo Viewer</title>
 <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github.min.css">
-<script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/highlight.min.js"></script>
 <style>
   :root { --border: #d0d7de; --bg-nav: #f6f8fa; --accent: #0969da; }
   * { box-sizing: border-box; }
@@ -32,6 +30,7 @@
 <header>
   <h1>🥋 RFUGM Dojo Viewer</h1>
   <span id="dojo-title"></span>
+  <button id="change-token-btn" type="button" style="margin-left:auto;">Token ändern</button>
 </header>
 <div id="error-banner" style="display:none; background:#ffebe9; color:#82071e; padding:0.5rem 1rem; border-bottom:1px solid #ffc1c1;"></div>
 <div id="layout">
@@ -48,6 +47,7 @@
     Wird nur lokal in diesem Browser gespeichert, nie im Repo.</p>
     <input type="password" id="token-input" placeholder="ghp_...">
     <button type="submit">Speichern</button>
+    <br><small id="token-error" style="color:#82071e; display:none;">Bitte ein Token eingeben.</small>
   </form>
 </dialog>
 <script>
@@ -63,6 +63,10 @@ function getToken() {
 
 function setToken(value) {
   localStorage.setItem(TOKEN_KEY, value);
+}
+
+function decodeBase64Utf8(b64) {
+  return new TextDecoder().decode(Uint8Array.from(atob(b64), (c) => c.charCodeAt(0)));
 }
 
 const state = {
@@ -87,7 +91,7 @@ function selectRound(index) {
 function renderRoundsNav() {
   const list = document.getElementById('rounds-list');
   list.innerHTML = '';
-  (state.config.rounds || []).forEach((round, index) => {
+  (state.config?.rounds || []).forEach((round, index) => {
     const li = document.createElement('li');
     li.textContent = round.title;
     li.className = index === state.currentRoundIndex ? 'active' : '';
@@ -122,14 +126,42 @@ function ensureToken() {
   return new Promise((resolve) => {
     if (state.token) return resolve(state.token);
     const dialog = document.getElementById('token-dialog');
+    const errorEl = document.getElementById('token-error');
+    let resolved = false;
+    errorEl.style.display = 'none';
     dialog.showModal();
-    document.getElementById('token-form').addEventListener('submit', () => {
+    dialog.addEventListener('cancel', (event) => {
+      // Esc fires 'cancel' (not 'submit'). Prevent the default close - an
+      // unset token breaks everything downstream, so keep the dialog open
+      // and force the user back into it instead of letting it vanish.
+      if (!resolved) event.preventDefault();
+    });
+    dialog.addEventListener('close', () => {
+      // Defensive fallback: if the dialog closed some other way without a
+      // resolved token (shouldn't normally happen since 'cancel' is
+      // prevented above), reopen it rather than leaving init() hanging.
+      if (!resolved) dialog.showModal();
+    });
+    document.getElementById('token-form').addEventListener('submit', (event) => {
       const value = document.getElementById('token-input').value.trim();
+      if (!value) {
+        event.preventDefault();
+        errorEl.style.display = 'inline';
+        return;
+      }
+      errorEl.style.display = 'none';
       setToken(value);
       state.token = value;
+      resolved = true;
       resolve(value);
-    }, { once: true });
+    });
   });
+}
+
+function changeToken() {
+  setToken('');
+  state.token = '';
+  location.reload();
 }
 
 function getRepoOwner() {
@@ -156,7 +188,7 @@ async function githubFetch(path) {
 async function loadConfig(dojoId) {
   const owner = getRepoOwner();
   const data = await githubFetch(`/repos/${owner}/${REPO_NAME}/contents/dojos/${dojoId}/config.yaml`);
-  const yamlText = atob(data.content);
+  const yamlText = decodeBase64Utf8(data.content);
   state.config = jsyaml.load(yamlText);
   render();
 }
@@ -213,7 +245,7 @@ function matchFilenamePattern(path, pattern) {
 async function loadFileContent(path, branch) {
   const owner = getRepoOwner();
   const data = await githubFetch(`/repos/${owner}/${REPO_NAME}/contents/${path}?ref=${branch}`);
-  return atob(data.content);
+  return decodeBase64Utf8(data.content);
 }
 
 function highlightLines(codeHtml, pattern) {
@@ -225,14 +257,21 @@ function highlightLines(codeHtml, pattern) {
   }).join('\n');
 }
 
-async function renderFileView(container, paths, branch, filenamePattern, highlightPattern) {
+async function renderFileView(container, paths, branch, filenamePattern, highlightPattern, seq) {
   const matching = paths.filter((p) => matchFilenamePattern(p, filenamePattern));
   container.innerHTML = '';
+  if (!matching.length) {
+    const info = document.createElement('p');
+    info.textContent = `Keine Dateien passend zu Muster "${filenamePattern}" gefunden.`;
+    container.appendChild(info);
+    return;
+  }
   for (const path of matching) {
     const raw = await loadFileContent(path, branch);
-    const highlighted = hljs.highlight(raw, { language: 'plaintext' }).value;
+    if (seq !== renderSeq) return; // a newer render superseded this one; abandon silently
+    const escaped = escapeHtml(raw);
     const pre = document.createElement('pre');
-    pre.innerHTML = `<code>${highlightLines(highlighted, highlightPattern)}</code>`;
+    pre.innerHTML = `<code>${highlightLines(escaped, highlightPattern)}</code>`;
     const heading = document.createElement('h4');
     heading.textContent = path;
     container.appendChild(heading);
@@ -253,8 +292,11 @@ function renderTreeView(container, paths) {
   container.innerHTML = `<ul class="file-tree">${html}</ul>`;
 }
 
+let renderSeq = 0;
+
 async function renderContent() {
-  const round = (state.config.rounds || [])[state.currentRoundIndex];
+  const seq = ++renderSeq;
+  const round = (state.config?.rounds || [])[state.currentRoundIndex];
   const pr = state.prs[state.currentParticipantIndex];
   const content = document.getElementById('content');
   if (!state.prs.length) {
@@ -263,20 +305,29 @@ async function renderContent() {
   }
   if (!round || !pr) { content.innerHTML = ''; return; }
   try {
-    const paths = (await loadFileTree(pr.branch))
-      .filter((p) => p.startsWith(`dojos/${state.dojoId}/submissions/${pr.username}/`));
+    const prefix = `dojos/${state.dojoId}/submissions/${pr.username}/`;
+    const paths = (await loadFileTree(pr.branch)).filter((p) => p.startsWith(prefix));
+    if (seq !== renderSeq) return; // a newer render superseded this one; abandon silently
+    if (!paths.length) {
+      content.innerHTML = `<p>Keine Dateien unter ${escapeHtml(prefix)} gefunden.</p>`;
+      clearError();
+      return;
+    }
     if (round.show === 'tree') {
       renderTreeView(content, paths);
     } else if (round.show === 'file') {
-      await renderFileView(content, paths, pr.branch, round.filename_pattern, round.highlight);
+      await renderFileView(content, paths, pr.branch, round.filename_pattern, round.highlight, seq);
     }
+    if (seq !== renderSeq) return;
     clearError();
   } catch (err) {
+    if (seq !== renderSeq) return; // a newer render already superseded this one
     showError(`Fehler beim Laden der Dateien für ${pr.username}: ${err.message}`);
   }
 }
 
 function handleKeydown(event) {
+  if (!state.config) return;
   const roundCount = (state.config.rounds || []).length;
   const participantCount = state.prs.length;
   if (event.key === 'ArrowRight' && participantCount) {
@@ -291,6 +342,7 @@ function handleKeydown(event) {
 }
 
 document.addEventListener('keydown', handleKeydown);
+document.getElementById('change-token-btn').addEventListener('click', changeToken);
 
 function showError(message) {
   const banner = document.getElementById('error-banner');

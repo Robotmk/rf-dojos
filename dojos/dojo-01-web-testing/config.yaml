@@ -34,7 +34,7 @@ rounds:
     title: "Custom Keywords"
     description: "Was wurde abstrahiert – und was nicht?"
     show: file
-    filename_pattern: "*.robot|*keywords*.robot|*resources*"
+    filename_pattern: "*.robot|*.resource"
 
   - id: teardown
     title: "Teardown & Fehlerbehandlung"
