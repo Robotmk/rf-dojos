@@ -73,8 +73,28 @@ const state = {
   currentParticipantIndex: 0,
 };
 
+function selectParticipant(index) {
+  state.currentParticipantIndex = index;
+  render();
+}
+
+function renderParticipantTabs() {
+  const container = document.getElementById('participant-tabs');
+  container.innerHTML = '';
+  state.prs.forEach((pr, index) => {
+    const btn = document.createElement('button');
+    btn.textContent = pr.username;
+    btn.className = index === state.currentParticipantIndex ? 'active' : '';
+    btn.addEventListener('click', () => selectParticipant(index));
+    container.appendChild(btn);
+  });
+}
+
 function render() {
   document.getElementById('dojo-title').textContent = state.config ? state.config.dojo.title : '';
+  renderParticipantTabs();
+  document.getElementById('status-bar').textContent =
+    `Teilnehmer: ${state.prs.length} PRs`;
 }
 
 function ensureToken() {
@@ -120,9 +140,25 @@ async function loadConfig(dojoId) {
   render();
 }
 
+async function loadOpenPRs(dojoId) {
+  const owner = getRepoOwner();
+  const allOpen = await githubFetch(`/repos/${owner}/${REPO_NAME}/pulls?state=open&per_page=100`);
+  const titlePrefix = `[${dojoId}]`;
+  state.prs = allOpen
+    .filter((pr) => pr.title.startsWith(titlePrefix))
+    .map((pr) => ({
+      username: pr.title.slice(titlePrefix.length).trim(),
+      branch: pr.head.ref,
+      number: pr.number,
+    }))
+    .sort((a, b) => a.username.localeCompare(b.username));
+  render();
+}
+
 async function init() {
   await ensureToken();
   await loadConfig(state.dojoId);
+  await loadOpenPRs(state.dojoId);
 }
 
 init();
