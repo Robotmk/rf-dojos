@@ -199,6 +199,46 @@ function escapeHtml(str) {
   return str.replace(/[&<>"']/g, (c) => map[c]);
 }
 
+function globToRegex(glob) {
+  const escaped = glob.replace(/[.+^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*');
+  return new RegExp(`^${escaped}$`);
+}
+
+function matchFilenamePattern(path, pattern) {
+  const filename = path.split('/').pop();
+  return pattern.split('|').some((glob) => globToRegex(glob).test(filename));
+}
+
+async function loadFileContent(path, branch) {
+  const owner = getRepoOwner();
+  const data = await githubFetch(`/repos/${owner}/${REPO_NAME}/contents/${path}?ref=${branch}`);
+  return atob(data.content);
+}
+
+function highlightLines(codeHtml, pattern) {
+  if (!pattern) return codeHtml;
+  const regex = new RegExp(pattern, 'i');
+  return codeHtml.split('\n').map((line) => {
+    const plain = line.replace(/<[^>]*>/g, '');
+    return regex.test(plain) ? `<span class="highlight-line">${line}</span>` : line;
+  }).join('\n');
+}
+
+async function renderFileView(container, paths, branch, filenamePattern, highlightPattern) {
+  const matching = paths.filter((p) => matchFilenamePattern(p, filenamePattern));
+  container.innerHTML = '';
+  for (const path of matching) {
+    const raw = await loadFileContent(path, branch);
+    const highlighted = hljs.highlight(raw, { language: 'plaintext' }).value;
+    const pre = document.createElement('pre');
+    pre.innerHTML = `<code>${highlightLines(highlighted, highlightPattern)}</code>`;
+    const heading = document.createElement('h4');
+    heading.textContent = path;
+    container.appendChild(heading);
+    container.appendChild(pre);
+  }
+}
+
 function renderTreeNode(name, subtree) {
   const escapedName = escapeHtml(name);
   if (subtree === null) return `<li>${escapedName}</li>`;
@@ -217,9 +257,12 @@ async function renderContent() {
   const pr = state.prs[state.currentParticipantIndex];
   const content = document.getElementById('content');
   if (!round || !pr) { content.innerHTML = ''; return; }
+  const paths = (await loadFileTree(pr.branch))
+    .filter((p) => p.startsWith(`dojos/${state.dojoId}/submissions/${pr.username}/`));
   if (round.show === 'tree') {
-    const paths = await loadFileTree(pr.branch);
-    renderTreeView(content, paths.filter((p) => p.startsWith(`dojos/${state.dojoId}/submissions/${pr.username}/`)));
+    renderTreeView(content, paths);
+  } else if (round.show === 'file') {
+    await renderFileView(content, paths, pr.branch, round.filename_pattern, round.highlight);
   }
 }
 
