@@ -1,0 +1,44 @@
+dojo:
+  id: dojo-01-web-testing
+  title: "Web Testing Dojo #1"
+  date: "2026-07-30"
+  target_app: "https://www.saucedemo.com"
+
+rounds:
+  - id: structure
+    title: "Verzeichnisstruktur"
+    description: "Wie ist das Projekt aufgebaut?"
+    show: tree
+
+  - id: test_structure
+    title: "Test-Struktur"
+    description: "Aufbau der .robot-Datei: Settings, Variables, Keywords, Test Cases"
+    show: file
+    filename_pattern: "*.robot"
+
+  - id: locators
+    title: "Locator-Strategie"
+    description: "Wie werden Elemente gefunden? CSS, XPath, ID, Playwright-native?"
+    show: file
+    filename_pattern: "*.robot"
+    highlight: "locator|css|xpath|id="
+
+  - id: wait_handling
+    title: "Wait-Handling"
+    description: "Wie wird auf dynamische Elemente gewartet?"
+    show: file
+    filename_pattern: "*.robot"
+    highlight: "Wait|sleep|timeout"
+
+  - id: keywords
+    title: "Custom Keywords"
+    description: "Was wurde abstrahiert – und was nicht?"
+    show: file
+    filename_pattern: "*.robot|*keywords*.robot|*resources*"
+
+  - id: teardown
+    title: "Teardown & Fehlerbehandlung"
+    description: "Screenshot-Strategie, Cleanup, Suite Teardown"
+    show: file
+    filename_pattern: "*.robot"
+    highlight: "Teardown|Screenshot|Run Keyword If Test Failed"
