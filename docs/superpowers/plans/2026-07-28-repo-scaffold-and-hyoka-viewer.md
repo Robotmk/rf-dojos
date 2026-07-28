@@ -652,7 +652,7 @@ node -e "
 $(sed -n '/^function globToRegex/,/^}/p' viewer/index.html)
 $(sed -n '/^function matchFilenamePattern/,/^}/p' viewer/index.html)
 console.assert(matchFilenamePattern('tests/login.robot', '*.robot') === true, 'FAIL 1');
-console.assert(matchFilenamePattern('resources/keywords.resource', '*.robot|*keywords*.robot|*resources*') === true, 'FAIL 2');
+console.assert(matchFilenamePattern('resources/shared_resources.resource', '*.robot|*keywords*.robot|*resources*') === true, 'FAIL 2');
 console.assert(matchFilenamePattern('README.md', '*.robot') === false, 'FAIL 3');
 console.log('OK');
 "
