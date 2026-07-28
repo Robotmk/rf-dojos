@@ -114,6 +114,7 @@ function render() {
   renderParticipantTabs();
   document.getElementById('status-bar').textContent =
     `Teilnehmer: ${state.prs.length} PRs`;
+  renderContent();
 }
 
 function ensureToken() {
@@ -172,6 +173,48 @@ async function loadOpenPRs(dojoId) {
     }))
     .sort((a, b) => a.username.localeCompare(b.username));
   render();
+}
+
+function buildTreeFromPaths(paths) {
+  const root = {};
+  for (const path of paths) {
+    const parts = path.split('/');
+    let node = root;
+    parts.forEach((part, i) => {
+      if (!node[part]) node[part] = i === parts.length - 1 ? null : {};
+      if (node[part] !== null) node = node[part];
+    });
+  }
+  return root;
+}
+
+async function loadFileTree(branch) {
+  const owner = getRepoOwner();
+  const data = await githubFetch(`/repos/${owner}/${REPO_NAME}/git/trees/${branch}?recursive=1`);
+  return data.tree.filter((entry) => entry.type === 'blob').map((entry) => entry.path);
+}
+
+function renderTreeNode(name, subtree) {
+  if (subtree === null) return `<li>${name}</li>`;
+  const children = Object.entries(subtree).map(([k, v]) => renderTreeNode(k, v)).join('');
+  return `<li>${name}/<ul>${children}</ul></li>`;
+}
+
+function renderTreeView(container, paths) {
+  const tree = buildTreeFromPaths(paths);
+  const html = Object.entries(tree).map(([k, v]) => renderTreeNode(k, v)).join('');
+  container.innerHTML = `<ul class="file-tree">${html}</ul>`;
+}
+
+async function renderContent() {
+  const round = (state.config.rounds || [])[state.currentRoundIndex];
+  const pr = state.prs[state.currentParticipantIndex];
+  const content = document.getElementById('content');
+  if (!round || !pr) { content.innerHTML = ''; return; }
+  if (round.show === 'tree') {
+    const paths = await loadFileTree(pr.branch);
+    renderTreeView(content, paths.filter((p) => p.startsWith(`dojos/${state.dojoId}/submissions/${pr.username}/`)));
+  }
 }
 
 async function init() {
