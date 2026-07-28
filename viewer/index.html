@@ -266,6 +266,22 @@ async function renderContent() {
   }
 }
 
+function handleKeydown(event) {
+  const roundCount = (state.config.rounds || []).length;
+  const participantCount = state.prs.length;
+  if (event.key === 'ArrowRight' && participantCount) {
+    selectParticipant((state.currentParticipantIndex + 1) % participantCount);
+  } else if (event.key === 'ArrowLeft' && participantCount) {
+    selectParticipant((state.currentParticipantIndex - 1 + participantCount) % participantCount);
+  } else if (event.key === 'ArrowDown' && roundCount) {
+    selectRound((state.currentRoundIndex + 1) % roundCount);
+  } else if (event.key === 'ArrowUp' && roundCount) {
+    selectRound((state.currentRoundIndex - 1 + roundCount) % roundCount);
+  }
+}
+
+document.addEventListener('keydown', handleKeydown);
+
 async function init() {
   await ensureToken();
   await loadConfig(state.dojoId);
