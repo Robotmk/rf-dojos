@@ -33,6 +33,7 @@
   <h1>🥋 RFUGM Dojo Viewer</h1>
   <span id="dojo-title"></span>
 </header>
+<div id="error-banner" style="display:none; background:#ffebe9; color:#82071e; padding:0.5rem 1rem; border-bottom:1px solid #ffc1c1;"></div>
 <div id="layout">
   <nav id="rounds-nav"><ul id="rounds-list"></ul></nav>
   <div id="main">
@@ -256,13 +257,22 @@ async function renderContent() {
   const round = (state.config.rounds || [])[state.currentRoundIndex];
   const pr = state.prs[state.currentParticipantIndex];
   const content = document.getElementById('content');
+  if (!state.prs.length) {
+    content.innerHTML = '<p>Noch keine offenen PRs für dieses Dojo gefunden.</p>';
+    return;
+  }
   if (!round || !pr) { content.innerHTML = ''; return; }
-  const paths = (await loadFileTree(pr.branch))
-    .filter((p) => p.startsWith(`dojos/${state.dojoId}/submissions/${pr.username}/`));
-  if (round.show === 'tree') {
-    renderTreeView(content, paths);
-  } else if (round.show === 'file') {
-    await renderFileView(content, paths, pr.branch, round.filename_pattern, round.highlight);
+  try {
+    const paths = (await loadFileTree(pr.branch))
+      .filter((p) => p.startsWith(`dojos/${state.dojoId}/submissions/${pr.username}/`));
+    if (round.show === 'tree') {
+      renderTreeView(content, paths);
+    } else if (round.show === 'file') {
+      await renderFileView(content, paths, pr.branch, round.filename_pattern, round.highlight);
+    }
+    clearError();
+  } catch (err) {
+    showError(`Fehler beim Laden der Dateien für ${pr.username}: ${err.message}`);
   }
 }
 
@@ -282,10 +292,31 @@ function handleKeydown(event) {
 
 document.addEventListener('keydown', handleKeydown);
 
+function showError(message) {
+  const banner = document.getElementById('error-banner');
+  banner.textContent = message;
+  banner.style.display = 'block';
+}
+
+function clearError() {
+  document.getElementById('error-banner').style.display = 'none';
+}
+
 async function init() {
-  await ensureToken();
-  await loadConfig(state.dojoId);
-  await loadOpenPRs(state.dojoId);
+  try {
+    await ensureToken();
+    await loadConfig(state.dojoId);
+    await loadOpenPRs(state.dojoId);
+    clearError();
+  } catch (err) {
+    if (err.status === 403 && err.remaining === '0') {
+      showError('GitHub Rate Limit erreicht. Bitte kurz warten oder Token prüfen.');
+    } else if (err.status === 404) {
+      showError(`Nicht gefunden: ${err.message}. Existiert das Dojo/die config.yaml?`);
+    } else {
+      showError(`Fehler beim Laden: ${err.message}`);
+    }
+  }
 }
 
 init();
