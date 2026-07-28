@@ -42,3 +42,18 @@ rounds:
     show: file
     filename_pattern: "*.robot"
     highlight: "Teardown|Screenshot|Run Keyword If Test Failed"
+
+buddies:
+  - a: alice
+    b: bob
+  - a: charlie
+    b: diana
+
+timer:
+  duration_minutes: 60
+  buddy_timeout_minutes: 2
+  milestones:
+    - at_minute: 45
+      message: "Noch 15 Minuten!"
+    - at_minute: 58
+      message: "Zeit ist um – bitte aufräumen für die Präsentation."

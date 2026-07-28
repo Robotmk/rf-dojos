@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>🥋 RFUGM Keiko Timer & Buddy</title>
+<script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: -apple-system, Segoe UI, sans-serif; color: #1f2328; }
+  header { padding: 0.75rem 1rem; border-bottom: 1px solid #d0d7de; }
+  #onboarding, #app { padding: 1rem; }
+  #app { display: none; }
+  #countdown { font-size: 4rem; font-variant-numeric: tabular-nums; text-align: center; }
+  #broadcast-banner { display: none; background: #fff8c5; padding: 0.75rem 1rem; border-radius: 6px; margin: 0.5rem 0; }
+  #help-status { padding: 0.5rem; }
+  .help-entry { padding: 0.5rem; border: 1px solid #d0d7de; border-radius: 6px; margin: 0.25rem 0; }
+  .help-entry.escalated { border-color: #cf222e; background: #ffebe9; }
+  button { cursor: pointer; }
+</style>
+</head>
+<body>
+<header><h1>🥋 Keiko Timer &amp; Buddy</h1></header>
+
+<div id="onboarding">
+  <div id="role-choice">
+    <p>Deine Rolle:</p>
+    <button id="role-organizer-btn">Organizer</button>
+    <button id="role-participant-btn">Teilnehmer</button>
+  </div>
+  <div id="name-choice" style="display:none;">
+    <p>Dein Name:</p>
+    <select id="name-select"></select>
+    <button id="name-confirm-btn">Bestätigen</button>
+  </div>
+</div>
+
+<div id="app">
+  <div id="broadcast-banner"></div>
+  <div id="countdown">--:--</div>
+  <div id="organizer-panel" style="display:none;"></div>
+  <div id="participant-panel" style="display:none;">
+    <p id="buddy-info"></p>
+    <button id="help-btn">Ich brauche Hilfe</button>
+    <div id="help-status"></div>
+  </div>
+</div>
+
+<script>
+const ROLE_KEY = 'rf_dojos_keiko_role';
+const NAME_KEY = 'rf_dojos_keiko_name';
+
+function getUrlParam(name) {
+  return new URLSearchParams(window.location.search).get(name);
+}
+
+function getRepoOwner() {
+  const host = window.location.hostname;
+  return host.endsWith('.github.io') ? host.replace('.github.io', '') : getUrlParam('owner');
+}
+
+function getRole() { return localStorage.getItem(ROLE_KEY) || ''; }
+function setRole(value) { localStorage.setItem(ROLE_KEY, value); }
+function getMyName() { return localStorage.getItem(NAME_KEY) || ''; }
+function setMyName(value) { localStorage.setItem(NAME_KEY, value); }
+
+const state = {
+  dojoId: getUrlParam('dojo'),
+  config: null,
+  role: getRole(),
+  myName: getMyName(),
+  myBuddy: null,
+};
+
+function render() {
+  document.getElementById('onboarding').style.display =
+    (state.role && (state.role === 'organizer' || state.myName)) ? 'none' : 'block';
+  document.getElementById('app').style.display =
+    (state.role && (state.role === 'organizer' || state.myName)) ? 'block' : 'none';
+  document.getElementById('organizer-panel').style.display = state.role === 'organizer' ? 'block' : 'none';
+  document.getElementById('participant-panel').style.display = state.role === 'participant' ? 'block' : 'none';
+}
+
+async function loadDojoConfig(dojoId) {
+  const owner = getRepoOwner();
+  const url = `https://raw.githubusercontent.com/${owner}/rf-dojos/main/dojos/${dojoId}/config.yaml`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`config.yaml nicht gefunden (${res.status})`);
+  return jsyaml.load(await res.text());
+}
+
+function wireOnboarding() {
+  document.getElementById('role-organizer-btn').addEventListener('click', () => {
+    state.role = 'organizer';
+    setRole('organizer');
+    render();
+  });
+  document.getElementById('role-participant-btn').addEventListener('click', () => {
+    document.getElementById('role-choice').style.display = 'none';
+    document.getElementById('name-choice').style.display = 'block';
+    const select = document.getElementById('name-select');
+    const names = (state.config.buddies || []).flatMap((pair) => [pair.a, pair.b]);
+    select.innerHTML = names.map((n) => `<option value="${n}">${n}</option>`).join('');
+  });
+  document.getElementById('name-confirm-btn').addEventListener('click', () => {
+    state.role = 'participant';
+    state.myName = document.getElementById('name-select').value;
+    setRole('participant');
+    setMyName(state.myName);
+    render();
+  });
+}
+
+async function init() {
+  state.config = await loadDojoConfig(state.dojoId);
+  wireOnboarding();
+  render();
+}
+
+init();
+</script>
+</body>
+</html>
