@@ -579,7 +579,7 @@ git commit -m "Add broadcast banner with sound and manual broadcast composer"
 
 **Interfaces:**
 - Consumes: `state.config.buddies`, `state.myName`, `state.channel`.
-- Produces: `resolveBuddy(name, buddyPairs)` (reine Funktion), `state.myBuddy`, `requestHelp()`, `state.pendingHelpTimeout`, `renderMyHelpStatus(status)`.
+- Produces: `resolveBuddy(name, buddyPairs)` (reine Funktion), `state.myBuddy`, `respondResolved(from)`, `respondEscalate(from, originalBuddy)`, `requestHelp()`, `state.pendingHelpTimeout`, `renderMyHelpStatus(status)`.
 
 - [ ] **Step 1: `resolveBuddy` als reine Funktion schreiben**
 
@@ -641,9 +641,21 @@ if (state.role === 'participant' && state.myName) {
 }
 ```
 
-- [ ] **Step 4: `requestHelp` implementieren und Button verdrahten**
+- [ ] **Step 4: `respondResolved`/`respondEscalate` und `requestHelp` implementieren, Button verdrahten**
+
+`respondResolved`/`respondEscalate` sind schmale Publish-Wrapper, die sowohl
+der Requester-Timeout (unten) als auch die Buddy-Buttons (Task 7) aufrufen —
+deshalb hier zentral definiert:
 
 ```javascript
+function respondResolved(from) {
+  state.channel.publish('help:resolved', { from });
+}
+
+function respondEscalate(from, originalBuddy) {
+  state.channel.publish('help:escalate', { from, originalBuddy });
+}
+
 function renderMyHelpStatus(status) {
   const el = document.getElementById('help-status');
   const labels = {
@@ -663,12 +675,6 @@ function requestHelp() {
   }, timeoutMinutes * 60 * 1000);
 }
 ```
-
-`respondEscalate` wird in Task 7 implementiert (wird hier bereits referenziert,
-da Task 6 und 7 im selben Commit-Zyklus des Prototyps landen können — die
-Funktion muss vor `requestHelp()`-Nutzung im Browser existieren, siehe Task 7
-Step 1, das VOR diesem Step in derselben Datei eingefügt werden muss, oder
-direkt im Anschluss ergänzt wird).
 
 Füge in `wireApp()` hinzu:
 
@@ -699,25 +705,10 @@ git commit -m "Add buddy resolution and help request publishing"
 - Modify: `viewer/keiko.html`
 
 **Interfaces:**
-- Consumes: `handleIncomingEvent`, `playTone`, `state.myName`, `state.channel`.
-- Produces: `respondResolved(from)`, `respondEscalate(from, originalBuddy)`, `showBuddyHelpAlert(from)`, Buddy-Hilferuf-UI im Teilnehmer-Panel.
+- Consumes: `handleIncomingEvent`, `playTone`, `state.myName`, `state.channel`, `respondResolved(from)` und `respondEscalate(from, originalBuddy)` (beide bereits in Task 6 implementiert).
+- Produces: `showBuddyHelpAlert(from)`, Buddy-Hilferuf-UI im Teilnehmer-Panel.
 
-- [ ] **Step 1: `respondResolved` und `respondEscalate` implementieren**
-
-Füge **vor** `requestHelp()` ein (damit die Funktion beim Parsen bereits
-existiert):
-
-```javascript
-function respondResolved(from) {
-  state.channel.publish('help:resolved', { from });
-}
-
-function respondEscalate(from, originalBuddy) {
-  state.channel.publish('help:escalate', { from, originalBuddy });
-}
-```
-
-- [ ] **Step 2: Buddy-Hilferuf-UI und `showBuddyHelpAlert` ergänzen**
+- [ ] **Step 1: Buddy-Hilferuf-UI und `showBuddyHelpAlert` ergänzen**
 
 Füge im Teilnehmer-Panel-HTML hinzu:
 
@@ -751,7 +742,7 @@ function showBuddyHelpAlert(from) {
 }
 ```
 
-- [ ] **Step 3: `handleIncomingEvent` um `help:request` und `help:resolved` (eigene Auflösung) erweitern**
+- [ ] **Step 2: `handleIncomingEvent` um `help:request` und `help:resolved` (eigene Auflösung) erweitern**
 
 ```javascript
 function handleIncomingEvent(message) {
@@ -795,7 +786,7 @@ function addOrUpdateHelpEntry(from, to, status) { /* siehe Task 8 */ }
 function removeHelpEntry(from) { /* siehe Task 8 */ }
 ```
 
-- [ ] **Step 4: Manuell verifizieren**
+- [ ] **Step 3: Manuell verifizieren**
 
 Run: Tab A als "alice", Tab B als "bob" (bobs Buddy ist alice).
 In Tab A: "Ich brauche Hilfe" klicken.
@@ -806,7 +797,7 @@ serverseitig via `clearTimeout` in Tab A gelöscht). Klick auf "Eskalieren"
 lässt Tab A "Keine Reaktion vom Buddy – an den Organizer eskaliert."
 anzeigen.
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 4: Commit**
 
 ```bash
 git add viewer/keiko.html
