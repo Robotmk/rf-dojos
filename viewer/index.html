@@ -78,6 +78,24 @@ function selectParticipant(index) {
   render();
 }
 
+function selectRound(index) {
+  state.currentRoundIndex = index;
+  render();
+}
+
+function renderRoundsNav() {
+  const list = document.getElementById('rounds-list');
+  list.innerHTML = '';
+  (state.config.rounds || []).forEach((round, index) => {
+    const li = document.createElement('li');
+    li.textContent = round.title;
+    li.className = index === state.currentRoundIndex ? 'active' : '';
+    li.title = round.description;
+    li.addEventListener('click', () => selectRound(index));
+    list.appendChild(li);
+  });
+}
+
 function renderParticipantTabs() {
   const container = document.getElementById('participant-tabs');
   container.innerHTML = '';
@@ -92,6 +110,7 @@ function renderParticipantTabs() {
 
 function render() {
   document.getElementById('dojo-title').textContent = state.config ? state.config.dojo.title : '';
+  renderRoundsNav();
   renderParticipantTabs();
   document.getElementById('status-bar').textContent =
     `Teilnehmer: ${state.prs.length} PRs`;
