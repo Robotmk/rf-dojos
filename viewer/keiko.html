@@ -96,6 +96,14 @@ function playTone(frequency, durationMs) {
   oscillator.stop(audioCtx.currentTime + durationMs / 1000);
 }
 
+function resolveBuddy(name, buddyPairs) {
+  for (const pair of buddyPairs) {
+    if (pair.a === name) return pair.b;
+    if (pair.b === name) return pair.a;
+  }
+  return null;
+}
+
 const state = {
   dojoId: getUrlParam('dojo'),
   config: null,
@@ -141,6 +149,33 @@ function checkMilestones(elapsedMinutes) {
   }
 }
 
+function respondResolved(from) {
+  state.channel.publish('help:resolved', { from });
+}
+
+function respondEscalate(from, originalBuddy) {
+  state.channel.publish('help:escalate', { from, originalBuddy });
+}
+
+function renderMyHelpStatus(status) {
+  const el = document.getElementById('help-status');
+  const labels = {
+    idle: '',
+    'waiting-for-buddy': `Anfrage an ${state.myBuddy} gesendet – wartet auf Reaktion...`,
+    escalated: 'Keine Reaktion vom Buddy – an den Organizer eskaliert.',
+  };
+  el.textContent = labels[status] || '';
+}
+
+function requestHelp() {
+  const timeoutMinutes = state.config.timer.buddy_timeout_minutes || 2;
+  state.channel.publish('help:request', { from: state.myName, to: state.myBuddy });
+  renderMyHelpStatus('waiting-for-buddy');
+  state.pendingHelpTimeout = setTimeout(() => {
+    respondEscalate(state.myName, state.myBuddy);
+  }, timeoutMinutes * 60 * 1000);
+}
+
 function render() {
   document.getElementById('onboarding').style.display =
     (state.role && (state.role === 'organizer' || state.myName)) ? 'none' : 'block';
@@ -148,6 +183,9 @@ function render() {
     (state.role && (state.role === 'organizer' || state.myName)) ? 'block' : 'none';
   document.getElementById('organizer-panel').style.display = state.role === 'organizer' ? 'block' : 'none';
   document.getElementById('participant-panel').style.display = state.role === 'participant' ? 'block' : 'none';
+  if (state.role === 'participant') {
+    document.getElementById('buddy-info').textContent = `Dein Buddy: ${state.myBuddy}`;
+  }
 }
 
 async function loadDojoConfig(dojoId) {
@@ -180,6 +218,7 @@ function wireOnboarding() {
   document.getElementById('name-confirm-btn').addEventListener('click', () => {
     state.role = 'participant';
     state.myName = document.getElementById('name-select').value;
+    state.myBuddy = resolveBuddy(state.myName, state.config.buddies);
     setRole('participant');
     setMyName(state.myName);
     render();
@@ -256,10 +295,15 @@ function wireApp() {
       input.value = '';
     }
   });
+  const helpBtn = document.getElementById('help-btn');
+  if (helpBtn) helpBtn.addEventListener('click', requestHelp);
 }
 
 async function init() {
   state.config = await loadDojoConfig(state.dojoId);
+  if (state.role === 'participant' && state.myName) {
+    state.myBuddy = resolveBuddy(state.myName, state.config.buddies);
+  }
   wireOnboarding();
   render();
   wireApp();
