@@ -9,19 +9,19 @@ abläuft, das Regelwerk und wie du deine Lösung einreichst. Was ein Dojo
 | Zeit  | Phase              | Inhalt                                               |
 |-------|--------------------|-------------------------------------------------------|
 | 18:30 | Ankommen & Warm-up | Vorstellungsrunde, Buddy-Zuteilung, Aufgabe erklären |
-| 19:00 | Keiko       | Jeder implementiert seinen Test   |
+| 19:00 | [Phase 1 - Keiko](#phase-1-keiko-implementierung)       | Jeder implementiert seinen Test   |
 | 20:00 | Pause              | Bier & Pizza 🍕🍺      |
-| 20:30 | Hyōka              | Vergleich & Diskussion der verschiedenen Lösungen |
-| 21:15 | Zanshin            | Was nehme ich heute mit? – kurze Abschlussrunde      |
-| 21:30 | Offen              |    |
+| 20:30 | [Phase 2 - Hyōka](#phase-2-hyōka-vergleich--diskussion)              | Vergleich & Diskussion der verschiedenen Lösungen |
+| 21:15 | [Phase 3 - Zanshin](#phase-3-zanshin-abschlussrunde)            | Was nehme ich heute mit? – kurze Abschlussrunde      |
+|  | Open End              |    |
 
 ## Das Buddy-System
 
 Jeder Teilnehmer arbeitet alleine – aber hat einen Buddy an seiner Seite. 
 
-Die Buddy-Regeln: 
+**Die Buddy-Regeln:**
 
-- Jedes Buddy-Paar besteht aus einer erfahrenen und einer weniger erfahrenen Person
+- Jedes Buddy-Paar besteht (nach Möglichkeit) aus einer erfahrenen und einer weniger erfahrenen Person
 - Der Buddy sollte nicht länger als 5 Minuten befragt werden
 - (Natürlich dürfen die Fragen in beide Richtungen gehen: auch der erfahrene Buddy darf den weniger erfahrenen Buddy fragen, wenn er mal nicht weiterkommt.)
 - Die Lösung bleibt immer die _eigene_.
@@ -37,8 +37,8 @@ Die Buddy-Regeln:
 
 | # | Regel | Warum |
 |---|-------|-------|
-| 1 | **Keine KI!** | Wir committen uns darauf, zur Lösungsfindung keine KI-Agents, KI-Autovervollständigung etc. zu benutzen - auch nicht, um "_nur kurz nachschauen_". Nutze stattdessen das Buddy-System und tausche Dich aus. Der Abend lebt vom echten Wissen der Menschen im Raum. |
-| 2 | **Dokumentation ist erlaubt** | RF User Guide, Library Docs, etc. - alles erlaubt. KI-generierte Antworten nicht. |
+| 1 | **Wir nutzen keine KI !** | Wir committen uns darauf, zur Lösungsfindung keine KI-Agents, KI-Autovervollständigung etc. zu benutzen - auch nicht, um "_nur kurz nachschauen_". Nutze stattdessen das Buddy-System und tausche Dich aus. Der Abend lebt vom echten Wissen der Menschen im Raum. |
+| 2 | **Dokumentation ist erlaubt** | RF User Guide, Library Docs, etc. - alles erlaubt. **KI-generierte Antworten nicht**. |
 | 3 | **Eigenes Wissen zuerst** | Dokumentation, Google, Buddy, Organisator - in dieser Reihenfolge.  |
 | 4 | **Buddy-Limit** | Max. 5 Minuten pro Buddy-Anfrage. Der Buddy gibt Hinweise, keine fertigen Lösungen. |
 | 5 | **Alle zeigen ihren Code** | Beim Hyōka zeigt jeder seine Lösung, auch wenn sie nicht fertig ist. |
@@ -60,14 +60,16 @@ Die Buddy-Regeln:
 
 Hinweis: `<dojo-id>` ist der Ordnername des jeweiligen Dojos, z. B. `dojo-01-web-testing` - siehe die Dojo-Liste unter [Mitmachen](README.md#mitmachen) auf der Startseite.
 
-1. Stelle sicher, dass Du die Voraussetzungen erfüllst
-2. Forke das Repo: `github.com/Robotmk/rf-dojos`
-3. Klone Deinen Fork: `git clone ssh://github.com/<dein-github-username>/rf-dojos.git`
-4. Lege einen Branch mit Deinem Github-Namen an: `git checkout -b <dojo-id>/[dein-github-username]`
+1. Stelle sicher, dass Du die Voraussetzungen erfüllst (s.o.)
+2. Forke das [Repo](https://github.com/Robotmk/rf-dojos) in Deinen Github-Account
+3. Klone Deinen Fork auf Dein Filesystem: `git clone ssh://github.com/<dein-github-username>/rf-dojos.git`
+4. Lege einen lokalen Branch mit Deinem Github-Namen an: `git checkout -b <dojo-id>/[dein-github-username]`
 5. Kopiere das Arbeits-Template:
    `cp -r dojos/<dojo-id>/submissions/_template dojos/<dojo-id>/submissions/[dein-github-username]`
 
 ### Phase 1: Keiko (Implementierung)
+
+Dein Arbeitsverzeichnis: `dojos/<dojo-id>/submissions/[dein-github-username]/`
 
 1. Lies die Aufgabe in `dojos/<dojo-id>/README.md`
 2. Test implementieren in `submissions/[dein-github-username]/`

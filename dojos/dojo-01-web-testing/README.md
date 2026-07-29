@@ -1,38 +1,63 @@
-# Dojo #1 – Web Testing
+# Dojo #1 – Web Testing (30.07.2026)
 
-**Ziel-Applikation:** https://www.saucedemo.com
-**Datum:** 2026-07-30
-
-## Die Aufgabe
-
-Implementiere einen Robot-Framework-Test, der folgenden Ablauf testet:
-
-1. Login mit gültigen Credentials
-2. Einen Artikel in den Warenkorb legen
-3. Checkout durchführen (Formular ausfüllen, Bestellung abschicken)
-4. Verifizieren, dass die Bestätigungsseite korrekt erscheint
-
-## Eingebaute Challenges
-
-| Challenge | Warum spannend |
-|---|---|
-| Login-Daten nicht hardcoden | Zeigt Umgang mit Variables, Resource Files oder Secrets |
-| Wait-Handling | Wie wartet man sauber auf dynamische Elemente? |
-| Screenshot bei Fehler | Bewusster Umgang mit Teardown und Fehlerbehandlung |
-| Mindestens 1 Custom Keyword | Wie strukturiert jemand seinen Code? |
-
-## Für Fortgeschrittene (optional)
-
-- Page Object Model umsetzen
-- Resource File Struktur anlegen
-- Test in mehrere Test Cases aufsplitten
-- Browser Library statt SeleniumLibrary – oder beide vergleichen
+**Ziel-Applikation:** https://sampleapp.tricentis.com/101/
 
 ## Workflow
 
 Der allgemeine Ablauf (Fork, Branch, Template kopieren, PR) und das
 Regelwerk stehen in der [Anleitung für Teilnehmer](../../TEILNEHMER.md).
-Für dieses Dojo gilt:
+
+**Für dieses Dojo gilt:**
 
 - Dojo-ID: `dojo-01-web-testing`
-- PR-Titel: `[dojo-01-web-testing] [github-username]`
+- PR-Titel: `[dojo-01-web-testing] [dein-github-username]`
+
+## Deine Aufgabe
+
+Implementiere einen Robot-Framework-Test, der den Angebots-Rechner der Versicherung testet, indem er die Formularseiten ausfüllt und die Bestätigung überprüft: 
+
+- Vehicle Data: 
+  - Make: Audi
+  - kw: 88
+  - Baujahr: 2004
+  - Sitze: 5
+  - Diesel
+  - Nutzlast: 700 kg
+  - Totalgewicht: 2100 kg
+  - Listenpreis: 30.000 $
+  - Kennzeichen: ABC-123
+  - Laufleistung: 15000 km
+- Angaben Versicherungsnehmer:
+  - Vorname: Max
+  - Nachname: Mustermann
+  - Geburtsdatum: 01.01.1980
+  - Geschlecht: männlich
+  - Adresse: Musterstraße 1, 12345 Musterstadt
+  - Land: Deutschland
+  - Angestellt
+  - Hobbies: Bungee
+- Product Data: 
+  - Versicherungsbeginn: mindestens 1 Monat in der Zukunft
+  - Versicherungssumme: 20.000.000 $
+  - Vollkasko
+  - Europa-Schutz
+- Preisoption: Platinum
+- Sende Angebot
+  - Email: max.mustermann@example.com
+  - Telefon: 0049201123456
+  - Username: max.mustermann
+  - Password: SecretPassword123!
+  - Kommentar: xxx
+  - Abschicken, warten auf Bestätiigung
+
+## Eingebaute Challenges
+
+Wenn du die Extra-Herausforderung suchst, dann berücksichtige die folgenden Punkte in deinem Test:
+
+| Challenge | Warum  |
+|---|---|
+| Login-Daten verschlüsseln | Umgang mit sensitiven Daten |
+| Warten auf Übermittlung der Daten | Umgang mit asynchronen Operationen |
+| Embedded screenshot bei Fehler | Dokumentation von Fehlerzuständen |
+| Resource Files | Auslagern von Keywords |
+

@@ -2,7 +2,7 @@ dojo:
   id: dojo-01-web-testing
   title: "Web Testing Dojo #1"
   date: "2026-07-30"
-  target_app: "https://www.saucedemo.com"
+  target_app: "https://sampleapp.tricentis.com/101/"
 
 rounds:
   - id: structure
