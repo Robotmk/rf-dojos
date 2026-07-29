@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <title>🥋 RFUGM Keiko Timer & Buddy</title>
 <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+<script src="https://cdn.ably.io/lib/ably.min.js"></script>
 <style>
   * { box-sizing: border-box; }
   body { margin: 0; font-family: -apple-system, Segoe UI, sans-serif; color: #1f2328; }
@@ -34,6 +35,15 @@
   </div>
 </div>
 
+<dialog id="ably-key-dialog">
+  <form method="dialog" id="ably-key-form">
+    <p>Ably API-Key eingeben (Capability: publish + subscribe).<br>
+    Wird nur lokal in diesem Browser gespeichert.</p>
+    <input type="password" id="ably-key-input" placeholder="xxxx.yyyy:zzzz">
+    <button type="submit">Speichern</button>
+  </form>
+</dialog>
+
 <div id="app">
   <div id="broadcast-banner"></div>
   <div id="countdown">--:--</div>
@@ -48,6 +58,7 @@
 <script>
 const ROLE_KEY = 'rf_dojos_keiko_role';
 const NAME_KEY = 'rf_dojos_keiko_name';
+const ABLY_KEY_STORAGE = 'rf_dojos_ably_key';
 
 function getUrlParam(name) {
   return new URLSearchParams(window.location.search).get(name);
@@ -62,6 +73,8 @@ function getRole() { return localStorage.getItem(ROLE_KEY) || ''; }
 function setRole(value) { localStorage.setItem(ROLE_KEY, value); }
 function getMyName() { return localStorage.getItem(NAME_KEY) || ''; }
 function setMyName(value) { localStorage.setItem(NAME_KEY, value); }
+function getAblyKey() { return localStorage.getItem(ABLY_KEY_STORAGE) || ''; }
+function setAblyKey(value) { localStorage.setItem(ABLY_KEY_STORAGE, value); }
 
 const state = {
   dojoId: getUrlParam('dojo'),
@@ -116,10 +129,41 @@ function wireOnboarding() {
   });
 }
 
+function ensureAblyKey() {
+  return new Promise((resolve) => {
+    const existing = getAblyKey();
+    if (existing) return resolve(existing);
+    const dialog = document.getElementById('ably-key-dialog');
+    dialog.showModal();
+    document.getElementById('ably-key-form').addEventListener('submit', () => {
+      const value = document.getElementById('ably-key-input').value.trim();
+      setAblyKey(value);
+      resolve(value);
+    }, { once: true });
+  });
+}
+
+function getChannelName(dojoId) {
+  return `dojo-${dojoId}-keiko`;
+}
+
+async function connectAbly() {
+  const key = await ensureAblyKey();
+  state.ably = new Ably.Realtime({ key });
+  state.channel = state.ably.channels.get(getChannelName(state.dojoId));
+  state.channel.subscribe((message) => handleIncomingEvent(message));
+}
+
+function handleIncomingEvent(message) {
+  // Wird in Task 3+ pro Event-Typ erweitert.
+  console.log('Empfangen:', message.name, message.data);
+}
+
 async function init() {
   state.config = await loadDojoConfig(state.dojoId);
   wireOnboarding();
   render();
+  await connectAbly();
 }
 
 init();
