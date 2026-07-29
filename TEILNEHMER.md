@@ -9,63 +9,78 @@ abläuft, das Regelwerk und wie du deine Lösung einreichst. Was ein Dojo
 | Zeit  | Phase              | Inhalt                                               |
 |-------|--------------------|-------------------------------------------------------|
 | 18:30 | Ankommen & Warm-up | Vorstellungsrunde, Buddy-Zuteilung, Aufgabe erklären |
-| 19:00 | Keiko (Randori)    | Jeder implementiert seinen Test – alleine, ohne KI   |
-| 20:00 | Pause              | Fuel & RAM-Kühlung // sponsored by Checkmk 🍕🍺      |
-| 20:15 | Hyōka              | Jeder zeigt seine Lösung live – Vergleich & Diskussion |
+| 19:00 | Keiko       | Jeder implementiert seinen Test   |
+| 20:00 | Pause              | Bier & Pizza 🍕🍺      |
+| 20:30 | Hyōka              | Vergleich & Diskussion der verschiedenen Lösungen |
 | 21:15 | Zanshin            | Was nehme ich heute mit? – kurze Abschlussrunde      |
-| 21:30 | Offen              | Networking, Gespräche, weiteres Tüfteln              |
+| 21:30 | Offen              |    |
 
 ## Das Buddy-System
 
-Jeder Teilnehmer arbeitet alleine – aber hat einen Buddy an seiner Seite. Der
-Buddy ist kein Teampartner, sondern ein Joker.
+Jeder Teilnehmer arbeitet alleine – aber hat einen Buddy an seiner Seite. 
+
+Die Buddy-Regeln: 
 
 - Jedes Buddy-Paar besteht aus einer erfahrenen und einer weniger erfahrenen Person
-- Der Buddy darf max. 5 Minuten befragt werden – danach läuft die eigene Uhr wieder
-- Die Lösung bleibt immer die eigene
-- Der Organisator ist die zweite Lifeline: gibt Hinweise, aber keine Lösungen
+- Der Buddy sollte nicht länger als 5 Minuten befragt werden
+- (Natürlich dürfen die Fragen in beide Richtungen gehen: auch der erfahrene Buddy darf den weniger erfahrenen Buddy fragen, wenn er mal nicht weiterkommt.)
+- Die Lösung bleibt immer die _eigene_.
+- Wenn das Buddy-Team nicht weiterkommt, ist der Organisator die zweite Rettungsleine.
 
-## Regelwerk
+**Aufgabe:** 
 
-Wird am Anfang jedes Dojos gemeinsam laut vorgelesen. Gilt als Ehrenkodex –
-nicht als Kontrolle.
+- Arbeitest du **selten** mit Robot Framework bzw. im heutigen Thema? => **Dann ziehe** 🟡
+- Arbeitest du **regelmäßig** mit Robot Framework bzw. im heutigen Thema? => **Dann ziehe** 🔴
+- Such dir jetzt deinen Buddy mit der anderen Farbe.
+
+## Dieses Regelwerk ist unser Ehrenkodex!
 
 | # | Regel | Warum |
 |---|-------|-------|
-| 1 | **Kein KI – kein Copilot** | Kein ChatGPT, kein GitHub Copilot, keine KI-Autovervollständigung. Auch nicht „nur kurz nachschauen". Der Abend lebt vom echten Wissen der Menschen im Raum. |
-| 2 | **Eigenes Wissen zuerst** | Erst selbst denken, dann Buddy fragen, dann Dokumentation. Wer sofort googelt, lernt nichts über seinen eigenen Wissensstand. |
-| 3 | **Dokumentation ist erlaubt** | robot-framework.org, Browser Library Docs, Checkmk Docs – alles erlaubt. KI-generierte Antworten nicht. |
-| 4 | **Keine Musterlösung** | Es gibt kein Richtig oder Falsch. Jeder Ansatz ist willkommen – auch ein halbfertiger Test mit einer guten Idee drin. |
-| 5 | **Buddy-Zeitlimit** | Max. 5 Minuten pro Buddy-Anfrage. Danach: selbst weitermachen. Der Buddy gibt Hinweise, keine fertigen Lösungen. |
-| 6 | **Alle zeigen ihren Code** | Beim Hyōka zeigt jeder seine Lösung – auch wenn sie nicht fertig ist. Gerade unfertige Ansätze führen zu den besten Gesprächen. |
-| 7 | **Keine Bewertung** | Im Hyōka gibt es keine Noten. Kein „das ist falsch". Nur: „interessant, warum hast du das so gemacht?" |
-| 8 | **Respekt im Dojo** | Jeder ist hier, um zu lernen. Erfahrene helfen. Anfänger fragen. Niemand wird für seinen Wissensstand bewertet. |
+| 1 | **Keine KI!** | Wir committen uns darauf, zur Lösungsfindung keine KI-Agents, KI-Autovervollständigung etc. zu benutzen - auch nicht, um "_nur kurz nachschauen_". Nutze stattdessen das Buddy-System und tausche Dich aus. Der Abend lebt vom echten Wissen der Menschen im Raum. |
+| 2 | **Dokumentation ist erlaubt** | RF User Guide, Library Docs, etc. - alles erlaubt. KI-generierte Antworten nicht. |
+| 3 | **Eigenes Wissen zuerst** | Dokumentation, Google, Buddy, Organisator - in dieser Reihenfolge.  |
+| 4 | **Buddy-Limit** | Max. 5 Minuten pro Buddy-Anfrage. Der Buddy gibt Hinweise, keine fertigen Lösungen. |
+| 5 | **Alle zeigen ihren Code** | Beim Hyōka zeigt jeder seine Lösung, auch wenn sie nicht fertig ist. |
+| 6 | **Keine Bewertung** | Es gibt keinen Preis zu gewinnen, kein "richtig" oder "falsch". Schon eher: "_spannend, warum hast du das denn so gemacht?_" |
+| 7 | **Respekt im Dojo** | Jeder ist hier, um zu lernen. Erfahrene helfen. Anfänger fragen. Niemand wird für seinen Wissensstand bewertet. |
 
-## Submission-Workflow
+## Voraussetzungen
 
-### Vorbereitung (vor dem Abend)
+- Github-Account
+- Laptop (MacOS/Windows/Linux)
+- Internetzugang
+- Git installiert
 
-1. Repo forken: `github.com/[owner]/rf-dojos`
-2. Branch anlegen: `git checkout -b <dojo-id>/[github-username]`
-3. Submissions-Template kopieren:
-   `cp -r dojos/<dojo-id>/submissions/_template dojos/<dojo-id>/submissions/[github-username]`
-4. Aufgabe in `dojos/<dojo-id>/README.md` lesen
+## Der Dojo-Workflow
 
-`<dojo-id>` ist der Ordnername des jeweiligen Dojos, z. B. `dojo-01-web-testing`
-– siehe die Dojo-Liste unter [Mitmachen](README.md#mitmachen) auf der
-Startseite.
+### Vorbereitung
 
-### Am Abend
+**Aufgabe:** (lass Dir ggf. von Deinem Buddy helfen)
 
-1. Test implementieren in `submissions/[github-username]/`
-2. Committen und pushen
-3. Pull Request öffnen gegen `main` des Original-Repos
-   - PR-Titel: `[<dojo-id>] [github-username]`
+Hinweis: `<dojo-id>` ist der Ordnername des jeweiligen Dojos, z. B. `dojo-01-web-testing` - siehe die Dojo-Liste unter [Mitmachen](README.md#mitmachen) auf der Startseite.
+
+1. Stelle sicher, dass Du die Voraussetzungen erfüllst
+2. Forke das Repo: `github.com/Robotmk/rf-dojos`
+3. Klone Deinen Fork: `git clone ssh://github.com/<dein-github-username>/rf-dojos.git`
+4. Lege einen Branch mit Deinem Github-Namen an: `git checkout -b <dojo-id>/[dein-github-username]`
+5. Kopiere das Arbeits-Template:
+   `cp -r dojos/<dojo-id>/submissions/_template dojos/<dojo-id>/submissions/[dein-github-username]`
+
+### Phase 1: Keiko (Implementierung)
+
+1. Lies die Aufgabe in `dojos/<dojo-id>/README.md`
+2. Test implementieren in `submissions/[dein-github-username]/`
+3. Committen und pushen: 
+   1. `git add .`
+   2. `git commit -m "meine Lösung"`
+   3. `git push origin <dojo-id>/[dein-github-username]`
+4. Pull Request öffnen gegen `main` des Original-Repos
+   - PR-Titel: `[<dojo-id>] [dein-github-username]`
    - Kein weiterer Text nötig
 
-### Was der Viewer damit macht
+### Phase 2: Hyōka (Vergleich & Diskussion)
 
-Der Organisator nutzt am Abend den [Viewer](viewer/), um alle eingereichten
-PRs thematisch nach Runden zu vergleichen (Verzeichnisstruktur, Locator-
-Strategie, Custom Keywords, …). Du musst dafür nichts weiter tun – sobald
-dein PR offen ist, taucht deine Lösung automatisch dort auf.
+Wir setzen uns zusammen und sehen uns mit dem [Viewer](viewer/) alle eingereichten PRs an.  
+Hierbei gehen wir thematisch vor: z.b. Verzeichnisstruktur, Locator-Strategie, Custom Keywords, ... .  
+Du musst dafür nichts weiter tun – sobald dein PR gepushed ist, taucht deine Lösung automatisch dort auf.
