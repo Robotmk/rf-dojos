@@ -8,9 +8,10 @@
   :root { --border: #d0d7de; --bg-nav: #f6f8fa; --accent: #0969da; }
   * { box-sizing: border-box; }
   body { margin: 0; font-family: -apple-system, Segoe UI, sans-serif; color: #1f2328; }
-  header { display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); }
+  header { display: flex; align-items: center; gap: 1rem; padding: 1rem; border-bottom: 1px solid var(--border); }
+  header img.logo { height: 72px; }
   header h1 { font-size: 1.1rem; margin: 0; }
-  #layout { display: grid; grid-template-columns: 240px 1fr; height: calc(100vh - 52px); }
+  #layout { display: grid; grid-template-columns: 240px 1fr; height: calc(100vh - 106px); }
   #rounds-nav { border-right: 1px solid var(--border); background: var(--bg-nav); overflow-y: auto; padding: 0.5rem; }
   #rounds-nav ul { list-style: none; margin: 0; padding: 0; }
   #rounds-nav li { padding: 0.5rem 0.75rem; border-radius: 6px; cursor: pointer; }
@@ -31,6 +32,7 @@
 </head>
 <body>
 <header>
+  <img class="logo" src="logo.png" alt="RFUGM Logo">
   <h1>🥋 RFUGM Dojo Viewer</h1>
   <span id="dojo-title"></span>
   <button id="change-token-btn" type="button" style="margin-left:auto;">Token ändern</button>
