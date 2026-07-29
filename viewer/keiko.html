@@ -47,7 +47,9 @@
 <div id="app">
   <div id="broadcast-banner"></div>
   <div id="countdown">--:--</div>
-  <div id="organizer-panel" style="display:none;"></div>
+  <div id="organizer-panel" style="display:none;">
+    <button id="start-timer-btn">Keiko starten (60 Min)</button>
+  </div>
   <div id="participant-panel" style="display:none;">
     <p id="buddy-info"></p>
     <button id="help-btn">Ich brauche Hilfe</button>
@@ -82,7 +84,21 @@ const state = {
   role: getRole(),
   myName: getMyName(),
   myBuddy: null,
+  timerStartedAt: null,
+  tickerInterval: null,
 };
+
+function computeMsRemaining(startedAt, durationMinutes, now) {
+  const endsAt = startedAt + durationMinutes * 60 * 1000;
+  return Math.max(0, endsAt - now);
+}
+
+function formatCountdown(msRemaining) {
+  const totalSeconds = Math.floor(msRemaining / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+}
 
 function render() {
   document.getElementById('onboarding').style.display =
@@ -154,15 +170,43 @@ async function connectAbly() {
   state.channel.subscribe((message) => handleIncomingEvent(message));
 }
 
+function renderCountdown() {
+  const el = document.getElementById('countdown');
+  if (!state.timerStartedAt) { el.textContent = '--:--'; return; }
+  const remaining = computeMsRemaining(state.timerStartedAt, state.config.timer.duration_minutes, Date.now());
+  el.textContent = formatCountdown(remaining);
+}
+
+function startTimer() {
+  const startedAt = Date.now();
+  state.channel.publish('timer:start', { startedAt });
+}
+
+function onTimerStart(startedAt) {
+  state.timerStartedAt = startedAt;
+  if (state.tickerInterval) clearInterval(state.tickerInterval);
+  state.tickerInterval = setInterval(renderCountdown, 1000);
+  renderCountdown();
+}
+
 function handleIncomingEvent(message) {
-  // Wird in Task 3+ pro Event-Typ erweitert.
-  console.log('Empfangen:', message.name, message.data);
+  if (message.name === 'timer:start') {
+    onTimerStart(message.data.startedAt);
+  } else {
+    console.log('Empfangen:', message.name, message.data);
+  }
+}
+
+function wireApp() {
+  const startBtn = document.getElementById('start-timer-btn');
+  if (startBtn) startBtn.addEventListener('click', startTimer);
 }
 
 async function init() {
   state.config = await loadDojoConfig(state.dojoId);
   wireOnboarding();
   render();
+  wireApp();
   await connectAbly();
 }
 
