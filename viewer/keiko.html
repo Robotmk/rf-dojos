@@ -408,18 +408,20 @@ async function connectAbly() {
   // minutes) unless the Ably account has persisted history enabled on the
   // channel, so this only helps someone who (re)joins shortly after the
   // timer started - it does not solve someone joining 30+ minutes in.
-  state.channel.history({ limit: 10 }, (err, resultPage) => {
-    if (err) { console.warn('Ably history catch-up failed:', err); return; }
-    try {
+  // Note: ably-js 2.x removed the v1 callback signature - history() always
+  // returns a Promise, so this must be a .then()/.catch(), not a callback
+  // (passing a trailing callback throws synchronously with error 40025).
+  state.channel.history({ limit: 10 })
+    .then((resultPage) => {
       const items = (resultPage && resultPage.items) || [];
       const timerStartMsg = items.find((m) => m.name === 'timer:start');
       if (timerStartMsg && !state.timerStartedAt) {
         onTimerStart(timerStartMsg.data.startedAt);
       }
-    } catch (e) {
-      console.warn('Ably history catch-up failed:', e);
-    }
-  });
+    })
+    .catch((err) => {
+      console.warn('Ably history catch-up failed:', err);
+    });
 }
 
 function renderCountdown() {
