@@ -86,6 +86,7 @@ const state = {
   myBuddy: null,
   timerStartedAt: null,
   tickerInterval: null,
+  firedMilestones: new Set(),
 };
 
 function computeMsRemaining(startedAt, durationMinutes, now) {
@@ -98,6 +99,20 @@ function formatCountdown(msRemaining) {
   const minutes = Math.floor(totalSeconds / 60);
   const seconds = totalSeconds % 60;
   return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+}
+
+function sendBroadcast(text) {
+  state.channel.publish('broadcast', { text });
+}
+
+function checkMilestones(elapsedMinutes) {
+  if (state.role !== 'organizer') return;
+  for (const milestone of (state.config.timer.milestones || [])) {
+    if (elapsedMinutes >= milestone.at_minute && !state.firedMilestones.has(milestone.at_minute)) {
+      state.firedMilestones.add(milestone.at_minute);
+      sendBroadcast(milestone.message);
+    }
+  }
 }
 
 function render() {
@@ -184,8 +199,13 @@ function startTimer() {
 
 function onTimerStart(startedAt) {
   state.timerStartedAt = startedAt;
+  state.firedMilestones = new Set();
   if (state.tickerInterval) clearInterval(state.tickerInterval);
-  state.tickerInterval = setInterval(renderCountdown, 1000);
+  state.tickerInterval = setInterval(() => {
+    renderCountdown();
+    const elapsedMinutes = (Date.now() - state.timerStartedAt) / 60000;
+    checkMilestones(elapsedMinutes);
+  }, 1000);
   renderCountdown();
 }
 
