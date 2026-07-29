@@ -99,7 +99,13 @@ function wireOnboarding() {
     document.getElementById('name-choice').style.display = 'block';
     const select = document.getElementById('name-select');
     const names = (state.config.buddies || []).flatMap((pair) => [pair.a, pair.b]);
-    select.innerHTML = names.map((n) => `<option value="${n}">${n}</option>`).join('');
+    select.innerHTML = '';
+    names.forEach((n) => {
+      const option = document.createElement('option');
+      option.value = n;
+      option.textContent = n;
+      select.appendChild(option);
+    });
   });
   document.getElementById('name-confirm-btn').addEventListener('click', () => {
     state.role = 'participant';
