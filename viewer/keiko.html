@@ -21,6 +21,7 @@
 </head>
 <body>
 <header><h1>🥋 Keiko Timer &amp; Buddy</h1></header>
+<div id="connection-banner" style="display:none; background:#ffebe9; color:#82071e; padding:0.5rem 1rem;"></div>
 
 <div id="onboarding">
   <div id="role-choice">
@@ -97,6 +98,16 @@ function playTone(frequency, durationMs) {
   oscillator.start();
   gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + durationMs / 1000);
   oscillator.stop(audioCtx.currentTime + durationMs / 1000);
+}
+
+function showConnectionBanner(text) {
+  const el = document.getElementById('connection-banner');
+  el.textContent = text;
+  el.style.display = 'block';
+}
+
+function hideConnectionBanner() {
+  document.getElementById('connection-banner').style.display = 'none';
 }
 
 function resolveBuddy(name, buddyPairs) {
@@ -314,6 +325,9 @@ async function connectAbly() {
   state.ably = new Ably.Realtime({ key });
   state.channel = state.ably.channels.get(getChannelName(state.dojoId));
   state.channel.subscribe((message) => handleIncomingEvent(message));
+  state.ably.connection.on('disconnected', () => showConnectionBanner('Verbindung getrennt, verbinde neu…'));
+  state.ably.connection.on('suspended', () => showConnectionBanner('Verbindung unterbrochen, verbinde neu…'));
+  state.ably.connection.on('connected', hideConnectionBanner);
 }
 
 function renderCountdown() {
