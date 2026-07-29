@@ -182,18 +182,30 @@ function requestHelp() {
 
 function showBuddyHelpAlert(from) {
   const el = document.getElementById('incoming-help-alert');
-  el.innerHTML = `
-    <p>${from} braucht Hilfe!</p>
-    <button id="resolve-btn-${from}">Erledigt</button>
-    <button id="escalate-btn-${from}">Eskalieren</button>
-  `;
+  el.innerHTML = '';
+
+  const p = document.createElement('p');
+  p.textContent = `${from} braucht Hilfe!`;
+  el.appendChild(p);
+
+  const resolveBtn = document.createElement('button');
+  resolveBtn.id = `resolve-btn-${from}`;
+  resolveBtn.textContent = 'Erledigt';
+  el.appendChild(resolveBtn);
+
+  const escalateBtn = document.createElement('button');
+  escalateBtn.id = `escalate-btn-${from}`;
+  escalateBtn.textContent = 'Eskalieren';
+  el.appendChild(escalateBtn);
+
   el.style.display = 'block';
   playTone(880, 500);
-  document.getElementById(`resolve-btn-${from}`).addEventListener('click', () => {
+
+  resolveBtn.addEventListener('click', () => {
     respondResolved(from);
     el.style.display = 'none';
   });
-  document.getElementById(`escalate-btn-${from}`).addEventListener('click', () => {
+  escalateBtn.addEventListener('click', () => {
     respondEscalate(from, state.myName);
     el.style.display = 'none';
   });
