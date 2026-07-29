@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <title>RFUGM Dojo Viewer</title>
 <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+<script src="vendor/monaco/min/vs/loader.js"></script>
+<script src="robotframework-language.js"></script>
 <style>
   :root { --border: #d0d7de; --bg-nav: #f6f8fa; --accent: #0969da; }
   * { box-sizing: border-box; }
@@ -400,7 +402,11 @@ async function init() {
   }
 }
 
-init();
+require.config({ paths: { vs: 'vendor/monaco/min/vs' } });
+require(['vs/editor/editor.main'], function () {
+  registerRobotFrameworkLanguage(monaco);
+  init();
+});
 </script>
 </body>
 </html>
