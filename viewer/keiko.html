@@ -53,6 +53,8 @@
       <input type="text" id="broadcast-input" placeholder="Nachricht an alle...">
       <button id="broadcast-send-btn">Senden</button>
     </div>
+    <h3>Offene Hilferufe</h3>
+    <div id="help-list"></div>
   </div>
   <div id="participant-panel" style="display:none;">
     <p id="buddy-info"></p>
@@ -114,6 +116,7 @@ const state = {
   timerStartedAt: null,
   tickerInterval: null,
   firedMilestones: new Set(),
+  helpEntries: {},
 };
 
 function computeMsRemaining(startedAt, durationMinutes, now) {
@@ -158,8 +161,36 @@ function respondEscalate(from, originalBuddy) {
   state.channel.publish('help:escalate', { from, originalBuddy });
 }
 
-function addOrUpdateHelpEntry(from, to, status) { /* siehe Task 8 */ }
-function removeHelpEntry(from) { /* siehe Task 8 */ }
+function addOrUpdateHelpEntry(from, to, status) {
+  state.helpEntries[from] = { to, status };
+  renderHelpList();
+}
+
+function removeHelpEntry(from) {
+  delete state.helpEntries[from];
+  renderHelpList();
+}
+
+function renderHelpList() {
+  const container = document.getElementById('help-list');
+  if (!container) return;
+  const entries = Object.entries(state.helpEntries);
+  container.innerHTML = '';
+  if (!entries.length) { container.textContent = 'Keine offenen Hilferufe.'; return; }
+  entries
+    .sort(([, a], [, b]) => (b.status === 'escalated') - (a.status === 'escalated'))
+    .forEach(([from, entry]) => {
+      const div = document.createElement('div');
+      div.className = entry.status === 'escalated' ? 'help-entry escalated' : 'help-entry';
+      const strong = document.createElement('strong');
+      strong.textContent = from;
+      div.appendChild(strong);
+      div.appendChild(document.createTextNode(
+        ` → Buddy: ${entry.to} (${entry.status === 'escalated' ? 'ESKALIERT' : 'läuft mit Buddy'})`
+      ));
+      container.appendChild(div);
+    });
+}
 
 function renderMyHelpStatus(status) {
   const el = document.getElementById('help-status');
@@ -336,6 +367,7 @@ function handleIncomingEvent(message) {
     }
     if (state.role === 'organizer') {
       addOrUpdateHelpEntry(data.from, data.originalBuddy, 'escalated');
+      playTone(220, 700);
     }
   }
 }
