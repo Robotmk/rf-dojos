@@ -15,6 +15,9 @@
   #rounds-nav ul { list-style: none; margin: 0; padding: 0; }
   #rounds-nav li { padding: 0.5rem 0.75rem; border-radius: 6px; cursor: pointer; }
   #rounds-nav li.active { background: var(--accent); color: white; }
+  #rounds-nav li .round-title { display: block; }
+  #rounds-nav li .round-description { display: block; font-size: 0.75rem; color: #57606a; margin-top: 0.15rem; }
+  #rounds-nav li.active .round-description { color: #d0d7de; }
   #main { display: flex; flex-direction: column; overflow: hidden; }
   #participant-tabs { display: flex; gap: 0.25rem; padding: 0.5rem 1rem; border-bottom: 1px solid var(--border); overflow-x: auto; }
   #participant-tabs button { border: 1px solid var(--border); background: white; border-radius: 6px; padding: 0.35rem 0.75rem; cursor: pointer; }
@@ -93,9 +96,20 @@ function renderRoundsNav() {
   list.innerHTML = '';
   (state.config?.rounds || []).forEach((round, index) => {
     const li = document.createElement('li');
-    li.textContent = round.title;
     li.className = index === state.currentRoundIndex ? 'active' : '';
-    li.title = round.description;
+
+    const titleEl = document.createElement('span');
+    titleEl.className = 'round-title';
+    titleEl.textContent = round.title;
+    li.appendChild(titleEl);
+
+    if (round.description) {
+      const descEl = document.createElement('small');
+      descEl.className = 'round-description';
+      descEl.textContent = round.description;
+      li.appendChild(descEl);
+    }
+
     li.addEventListener('click', () => selectRound(index));
     list.appendChild(li);
   });
