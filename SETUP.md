@@ -46,6 +46,8 @@ Abend). Mit Token: 5.000 Requests/Stunde.
    ```
    https://<owner>.github.io/rf-dojos/viewer/?dojo=dojo-01-web-testing
    ```
+   Alternativ die URL ohne `?dojo=...` öffnen – dann zeigt der Viewer eine
+   Liste aller Dojos im Repo, von der aus man ins gewünschte springen kann.
 5. Beim ersten Öffnen erscheint ein Dialog – Token dort eintragen. Es landet
    ausschließlich in `localStorage` des Browsers, nie im Repo. Falls du
    dich vertippst oder der Token abläuft: über den Button „Token ändern" im

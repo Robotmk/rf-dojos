@@ -376,6 +376,9 @@ function buildDojoLink(dojoId) {
 
 async function loadDojoList() {
   const owner = getRepoOwner();
+  if (!owner) {
+    throw new Error('Repo-Owner unbekannt — bitte ?owner=<github-user> an die URL anhängen.');
+  }
   const entries = await githubFetch(`/repos/${owner}/${REPO_NAME}/contents/dojos`);
   const dirs = entries.filter((entry) => entry.type === 'dir');
   const dojos = [];
