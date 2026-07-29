@@ -1,5 +1,6 @@
-# 🥋 Robot Framework Web Testing Dojo
-## Konzept & Moderationsleitfaden
+# Anleitung für Organisator
+
+## Konzept, Moderationsleitfaden & Viewer-Bedienung
 *Wiederholbares Format für die RFUGM*
 
 > **Was ist ein Dojo?**
@@ -22,20 +23,17 @@ Kein Vortrag. Kein Musterlösungs-Foliensatz. Lernen von allen Seiten.
 | Zeit  | Phase               | Inhalt                                                    |
 |-------|---------------------|-----------------------------------------------------------|
 | 18:30 | Ankommen & Warm-up  | Vorstellungsrunde, Buddy-Zuteilung, Aufgabe erklären      |
-| 19:00 | 🥋 Keiko (Randori)  | Jeder implementiert seinen Test – alleine, ohne KI        |
+| 19:00 | Keiko (Randori)     | Jeder implementiert seinen Test – alleine, ohne KI        |
 | 20:00 | Pause               | Fuel & RAM-Kühlung // sponsored by Checkmk 🍕🍺           |
-| 20:15 | 🔍 Hyōka            | Jeder zeigt seine Lösung live – Vergleich & Diskussion    |
+| 20:15 | Hyōka               | Jeder zeigt seine Lösung live – Vergleich & Diskussion    |
 | 21:15 | Zanshin             | Was nehme ich heute mit? – kurze Abschlussrunde           |
 | 21:30 | Offen               | Networking, Gespräche, weiteres Tüfteln                   |
 
 ## Das Buddy-System
 
-Jeder Teilnehmer arbeitet alleine – aber hat einen Buddy an seiner Seite. Der Buddy ist kein Teampartner, sondern ein Joker.
-
-- Jedes Buddy-Paar besteht aus einer erfahrenen und einer weniger erfahrenen Person
-- Der Buddy darf max. 5 Minuten befragt werden – danach läuft die eigene Uhr wieder
-- Die Lösung bleibt immer die eigene
-- Der Organisator ist die zweite Lifeline: gibt Hinweise, aber keine Lösungen
+Die genauen Buddy-Regeln (Zeitlimit, Paarzusammensetzung) stehen in der
+[Anleitung für Teilnehmer](TEILNEHMER.md#das-buddy-system) – Buddy-Paare
+legst du als Organisator vorab fest (siehe Moderationsleitfaden unten).
 
 > **Warum Buddy statt Team?**
 > Teams produzieren eine Lösung. Buddies produzieren viele Lösungen – und genau diese Vielfalt ist das Lernmaterial des Abends. Jeder Ansatz zählt, keine Idee geht in der Gruppe unter.
@@ -56,18 +54,10 @@ Was sich von Dojo zu Dojo ändert: die Aufgabe, die eingebauten Challenges und d
 
 # Teil 2 – Das Regelwerk des Dojo
 
-Das Regelwerk wird am Anfang jedes Dojos gemeinsam laut vorgelesen. Es gilt als Ehrenkodex – nicht als Kontrolle.
-
-| # | Regel | Warum |
-|---|-------|-------|
-| 1 | **Kein KI – kein Copilot** | Kein ChatGPT, kein GitHub Copilot, keine KI-Autovervollständigung. Auch nicht „nur kurz nachschauen". Der Abend lebt vom echten Wissen der Menschen im Raum. |
-| 2 | **Eigenes Wissen zuerst** | Erst selbst denken, dann Buddy fragen, dann Dokumentation. Wer sofort googelt, lernt nichts über seinen eigenen Wissensstand. |
-| 3 | **Dokumentation ist erlaubt** | robot-framework.org, Browser Library Docs, Checkmk Docs – alles erlaubt. KI-generierte Antworten nicht. |
-| 4 | **Keine Musterlösung** | Es gibt kein Richtig oder Falsch. Jeder Ansatz ist willkommen – auch ein halbfertiger Test mit einer guten Idee drin. |
-| 5 | **Buddy-Zeitlimit** | Max. 5 Minuten pro Buddy-Anfrage. Danach: selbst weitermachen. Der Buddy gibt Hinweise, keine fertigen Lösungen. |
-| 6 | **Alle zeigen ihren Code** | Beim Hyōka zeigt jeder seine Lösung – auch wenn sie nicht fertig ist. Gerade unfertige Ansätze führen zu den besten Gesprächen. |
-| 7 | **Keine Bewertung** | Im Hyōka gibt es keine Noten. Kein „das ist falsch". Nur: „interessant, warum hast du das so gemacht?" |
-| 8 | **Respekt im Dojo** | Jeder ist hier, um zu lernen. Erfahrene helfen. Anfänger fragen. Niemand wird für seinen Wissensstand bewertet. |
+Das vollständige Regelwerk steht in der
+[Anleitung für Teilnehmer](TEILNEHMER.md#regelwerk) – es wird am Anfang
+jedes Dojos gemeinsam laut vorgelesen und gilt als Ehrenkodex, nicht als
+Kontrolle.
 
 > **Wie das Regelwerk eingeführt wird:**
 > Der Organisator liest die Regeln nicht vor – er lässt sie von einem Teilnehmer laut vorlesen. Das schafft sofort Verbindlichkeit und ein „wir haben das gemeinsam beschlossen"-Gefühl.
@@ -103,7 +93,7 @@ Aufgabe auf Screen oder Papier zeigen. Challenges erklären. Dann:
 > **Moderationstext:**
 > „Ihr habt 60 Minuten. Kein Richtig, kein Falsch. Wenn ihr nicht fertig werdet – kein Problem. Zeigt beim Hyōka, wie weit ihr gekommen seid und was ihr dabei gelernt habt."
 
-## 19:00 – 🥋 Keiko / Randori (60 min)
+## 19:00 – Keiko / Randori (60 min)
 
 Alle arbeiten still und alleine. Du als Moderator:
 
@@ -225,3 +215,21 @@ Challenges:
 Optional für Fortgeschrittene:
 → _______________
 ```
+
+---
+
+# Teil 6 – Viewer-Bedienung
+
+Der [Viewer](viewer/) ist das browserbasierte Vergleichs-Tool für den Hyōka.
+Einmalige technische Einrichtung (GitHub Pages aktivieren, Repo
+veröffentlichen): siehe [SETUP.md](SETUP.md).
+
+1. URL vor dem Abend bookmarken:
+   `https://<owner>.github.io/rf-dojos/viewer/?dojo=<dojo-id>`
+2. Beim ersten Öffnen: GitHub Personal Access Token (Scope `public_repo`)
+   eintragen. Wird nur lokal im Browser gespeichert, nie im Repo.
+3. Tastatursteuerung: `←`/`→` = Teilnehmer wechseln, `↑`/`↓` = Runde wechseln.
+
+Öffnest du den Viewer ohne `?dojo=`, zeigt er nur einen Hinweis mit einem
+Link zurück zur [Startseite](README.md) – die Übersicht aller Dojos gehört
+dorthin, nicht in den Viewer.

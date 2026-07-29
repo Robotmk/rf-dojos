@@ -46,8 +46,8 @@ Abend). Mit Token: 5.000 Requests/Stunde.
    ```
    https://<owner>.github.io/rf-dojos/viewer/?dojo=dojo-01-web-testing
    ```
-   Alternativ die URL ohne `?dojo=...` öffnen – dann zeigt der Viewer eine
-   Liste aller Dojos im Repo, von der aus man ins gewünschte springen kann.
+   Die Liste aller Dojos zum Reinspringen steht auf der
+   [Startseite](README.md#mitmachen) – nicht im Viewer.
 5. Beim ersten Öffnen erscheint ein Dialog – Token dort eintragen. Es landet
    ausschließlich in `localStorage` des Browsers, nie im Repo. Falls du
    dich vertippst oder der Token abläuft: über den Button „Token ändern" im
@@ -62,7 +62,7 @@ wechselt die Themen-Runde.
 
 Teilnehmer brauchen für den Abend selbst kein eigenes Tool und keinen
 eigenen Zugang. Das Buddy-System läuft rein organisatorisch (siehe
-`manual.md`, Teil 1 „Das Buddy-System" und Regelwerk Punkt 5): Buddy-Paare
+`ORGANISATOR.md`, Teil 1 „Das Buddy-System" und Regelwerk Punkt 5): Buddy-Paare
 werden vorab vom Organisator zugeteilt und am Abend mündlich bekanntgegeben,
 das 5-Minuten-Limit und die Zeitnahme handhabst du als Organisator selbst.
 
@@ -107,4 +107,4 @@ Für ein **neues Dojo**:
 - [ ] Beamer/Screen-Share für den Hyōka-Viewer funktioniert
 - [ ] Buddy-Paare sind final festgelegt (nicht öffentlich sichtbar machen,
       nur für dich als Organizer relevant)
-- [ ] Regelwerk (siehe `manual.md`) ausgedruckt oder auf Screen bereit
+- [ ] Regelwerk (siehe `TEILNEHMER.md`) ausgedruckt oder auf Screen bereit

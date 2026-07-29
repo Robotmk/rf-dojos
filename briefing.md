@@ -171,7 +171,7 @@ automatisch die passende `config.yaml` und alle PRs.
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│  🥋 RFUGM Dojo Viewer  │  Web Testing Dojo #1  │  ⚙️   │
+│  RFUGM Dojo Viewer     │  Web Testing Dojo #1  │  ⚙️   │
 ├──────────────────┬──────────────────────────────────────┤
 │  RUNDEN          │                                       │
 │  ─────────────   │   [Teilnehmer-Tabs]                   │
