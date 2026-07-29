@@ -851,17 +851,25 @@ function renderHelpList() {
   const container = document.getElementById('help-list');
   if (!container) return;
   const entries = Object.entries(state.helpEntries);
+  container.innerHTML = '';
   if (!entries.length) { container.textContent = 'Keine offenen Hilferufe.'; return; }
-  container.innerHTML = entries
+  entries
     .sort(([, a], [, b]) => (b.status === 'escalated') - (a.status === 'escalated'))
-    .map(([from, entry]) => `
-      <div class="help-entry ${entry.status === 'escalated' ? 'escalated' : ''}">
-        <strong>${from}</strong> → Buddy: ${entry.to}
-        (${entry.status === 'escalated' ? 'ESKALIERT' : 'läuft mit Buddy'})
-      </div>
-    `).join('');
+    .forEach(([from, entry]) => {
+      const div = document.createElement('div');
+      div.className = entry.status === 'escalated' ? 'help-entry escalated' : 'help-entry';
+      const strong = document.createElement('strong');
+      strong.textContent = from;
+      div.appendChild(strong);
+      div.appendChild(document.createTextNode(
+        ` → Buddy: ${entry.to} (${entry.status === 'escalated' ? 'ESKALIERT' : 'läuft mit Buddy'})`
+      ));
+      container.appendChild(div);
+    });
 }
 ```
+
+Hinweis: `entry.to`/`from` werden hier per `textContent`/`createTextNode` statt `innerHTML`-Konkatenation eingefügt — gleiches Muster wie die XSS-Fixes in Task 1, Task 6 (Viewer-Plan) und Task 7 dieses Plans, von vornherein korrekt statt erst per Review nachgezogen.
 
 - [ ] **Step 3: Ton bei Eskalation für Organizer ergänzen**
 
