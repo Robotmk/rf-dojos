@@ -8,7 +8,8 @@
 <style>
   * { box-sizing: border-box; }
   body { margin: 0; font-family: -apple-system, Segoe UI, sans-serif; color: #1f2328; }
-  header { display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1rem; border-bottom: 1px solid #d0d7de; }
+  header { display: flex; align-items: center; gap: 1rem; padding: 1rem; border-bottom: 1px solid #d0d7de; }
+  header img.logo { height: 72px; }
   #onboarding, #app { padding: 1rem; }
   #app { display: none; }
   #countdown { font-size: 4rem; font-variant-numeric: tabular-nums; text-align: center; }
@@ -21,6 +22,7 @@
 </head>
 <body>
 <header>
+  <img class="logo" src="logo.png" alt="RFUGM Logo">
   <h1>🥋 Keiko Timer &amp; Buddy</h1>
   <button id="change-ably-key-btn" type="button" style="margin-left:auto;">Ably-Key ändern</button>
 </header>
