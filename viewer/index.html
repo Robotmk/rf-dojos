@@ -30,6 +30,9 @@
   dialog#token-dialog { border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; }
   dialog#token-dialog input { width: 320px; padding: 0.4rem; }
   .highlight-line { background: #fff8c5; }
+  #file-view { display: flex; height: 100%; }
+  #explorer { width: 220px; border-right: 1px solid var(--border); overflow-y: auto; padding: 0.5rem; flex-shrink: 0; }
+  #editor-pane { flex: 1; min-width: 0; }
 </style>
 </head>
 <body>
@@ -45,7 +48,14 @@
   <nav id="rounds-nav"><ul id="rounds-list"></ul></nav>
   <div id="main">
     <div id="participant-tabs"></div>
-    <div id="content"></div>
+    <div id="content">
+      <p id="content-message" style="display:none;"></p>
+      <div id="tree-view"></div>
+      <div id="file-view" style="display:none;">
+        <div id="explorer"></div>
+        <div id="editor-pane"></div>
+      </div>
+    </div>
     <div id="status-bar"></div>
   </div>
 </div>
@@ -75,6 +85,39 @@ function setToken(value) {
 
 function decodeBase64Utf8(b64) {
   return new TextDecoder().decode(Uint8Array.from(atob(b64), (c) => c.charCodeAt(0)));
+}
+
+let monacoEditor = null;
+const modelCache = new Map(); // key: `${branch}::${relPath}` -> monaco.editor.ITextModel
+
+function ensureEditorInstance() {
+  if (monacoEditor) return monacoEditor;
+  monacoEditor = monaco.editor.create(document.getElementById('editor-pane'), {
+    readOnly: true,
+    theme: 'rf-light',
+    automaticLayout: true,
+    minimap: { enabled: false },
+  });
+  return monacoEditor;
+}
+
+async function openFileInEditor(relPath, absolutePath, branch) {
+  const key = `${branch}::${relPath}`;
+  let model = modelCache.get(key);
+  if (!model) {
+    const content = await loadFileContent(absolutePath, branch);
+    model = monaco.editor.createModel(content, 'robotframework');
+    modelCache.set(key, model);
+  }
+  ensureEditorInstance().setModel(model);
+}
+
+function showContentMessage(text) {
+  const messageEl = document.getElementById('content-message');
+  messageEl.textContent = text;
+  messageEl.style.display = text ? '' : 'none';
+  document.getElementById('tree-view').style.display = 'none';
+  document.getElementById('file-view').style.display = 'none';
 }
 
 const state = {
@@ -267,37 +310,6 @@ async function loadFileContent(path, branch) {
   return decodeBase64Utf8(data.content);
 }
 
-function highlightLines(codeHtml, pattern) {
-  if (!pattern) return codeHtml;
-  const regex = new RegExp(pattern, 'i');
-  return codeHtml.split('\n').map((line) => {
-    const plain = line.replace(/<[^>]*>/g, '');
-    return regex.test(plain) ? `<span class="highlight-line">${line}</span>` : line;
-  }).join('\n');
-}
-
-async function renderFileView(container, paths, branch, filenamePattern, highlightPattern, seq) {
-  const matching = paths.filter((p) => matchFilenamePattern(p, filenamePattern));
-  container.innerHTML = '';
-  if (!matching.length) {
-    const info = document.createElement('p');
-    info.textContent = `Keine Dateien passend zu Muster "${filenamePattern}" gefunden.`;
-    container.appendChild(info);
-    return;
-  }
-  for (const path of matching) {
-    const raw = await loadFileContent(path, branch);
-    if (seq !== renderSeq) return; // a newer render superseded this one; abandon silently
-    const escaped = escapeHtml(raw);
-    const pre = document.createElement('pre');
-    pre.innerHTML = `<code>${highlightLines(escaped, highlightPattern)}</code>`;
-    const heading = document.createElement('h4');
-    heading.textContent = path;
-    container.appendChild(heading);
-    container.appendChild(pre);
-  }
-}
-
 function renderTreeNode(name, subtree) {
   const escapedName = escapeHtml(name);
   if (subtree === null) return `<li>${escapedName}</li>`;
@@ -317,25 +329,31 @@ async function renderContent() {
   const seq = ++renderSeq;
   const round = (state.config?.rounds || [])[state.currentRoundIndex];
   const pr = state.prs[state.currentParticipantIndex];
-  const content = document.getElementById('content');
   if (!state.prs.length) {
-    content.innerHTML = '<p>Noch keine offenen PRs für dieses Dojo gefunden.</p>';
+    showContentMessage('Noch keine offenen PRs für dieses Dojo gefunden.');
     return;
   }
-  if (!round || !pr) { content.innerHTML = ''; return; }
+  if (!round || !pr) { showContentMessage(''); return; }
   try {
     const prefix = `dojos/${state.dojoId}/submissions/${pr.username}/`;
     const paths = (await loadFileTree(pr.branch)).filter((p) => p.startsWith(prefix));
     if (seq !== renderSeq) return; // a newer render superseded this one; abandon silently
     if (!paths.length) {
-      content.innerHTML = `<p>Keine Dateien unter ${escapeHtml(prefix)} gefunden.</p>`;
+      showContentMessage(`Keine Dateien unter ${prefix} gefunden.`);
       clearError();
       return;
     }
+    showContentMessage('');
+    document.getElementById('tree-view').style.display = round.show === 'tree' ? '' : 'none';
+    document.getElementById('file-view').style.display = round.show === 'file' ? 'flex' : 'none';
     if (round.show === 'tree') {
-      renderTreeView(content, paths);
+      renderTreeView(document.getElementById('tree-view'), paths);
     } else if (round.show === 'file') {
-      await renderFileView(content, paths, pr.branch, round.filename_pattern, round.highlight, seq);
+      const prefixLen = prefix.length;
+      const relPaths = paths.map((p) => p.slice(prefixLen));
+      if (relPaths.length) {
+        await openFileInEditor(relPaths[0], paths[0], pr.branch);
+      }
     }
     if (seq !== renderSeq) return;
     clearError();
