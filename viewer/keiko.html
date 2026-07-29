@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <title>🥋 RFUGM Keiko Timer & Buddy</title>
 <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
-<script src="https://cdn.ably.io/lib/ably.min.js"></script>
+<script src="https://cdn.ably.io/lib/ably.min-2.26.0.js"></script>
 <style>
   * { box-sizing: border-box; }
   body { margin: 0; font-family: -apple-system, Segoe UI, sans-serif; color: #1f2328; }
-  header { padding: 0.75rem 1rem; border-bottom: 1px solid #d0d7de; }
+  header { display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1rem; border-bottom: 1px solid #d0d7de; }
   #onboarding, #app { padding: 1rem; }
   #app { display: none; }
   #countdown { font-size: 4rem; font-variant-numeric: tabular-nums; text-align: center; }
@@ -20,8 +20,12 @@
 </style>
 </head>
 <body>
-<header><h1>🥋 Keiko Timer &amp; Buddy</h1></header>
-<div id="connection-banner" style="display:none; background:#ffebe9; color:#82071e; padding:0.5rem 1rem;"></div>
+<header>
+  <h1>🥋 Keiko Timer &amp; Buddy</h1>
+  <button id="change-ably-key-btn" type="button" style="margin-left:auto;">Ably-Key ändern</button>
+</header>
+<div id="error-banner" style="display:none; background:#ffebe9; color:#82071e; padding:0.5rem 1rem; border-bottom:1px solid #ffc1c1;"></div>
+<div id="connection-banner" style="display:none; background:#fff8c5; color:#7d4e00; padding:0.5rem 1rem;"></div>
 
 <div id="onboarding">
   <div id="role-choice">
@@ -42,10 +46,12 @@
     Wird nur lokal in diesem Browser gespeichert.</p>
     <input type="password" id="ably-key-input" placeholder="xxxx.yyyy:zzzz">
     <button type="submit">Speichern</button>
+    <br><small id="ably-key-error" style="color:#82071e; display:none;">Bitte einen Ably-Key eingeben.</small>
   </form>
 </dialog>
 
 <div id="app">
+  <button id="enable-sound-btn" type="button">🔊 Ton aktivieren</button>
   <div id="broadcast-banner"></div>
   <div id="countdown">--:--</div>
   <div id="organizer-panel" style="display:none;">
@@ -60,6 +66,7 @@
   <div id="participant-panel" style="display:none;">
     <p id="buddy-info"></p>
     <button id="help-btn">Ich brauche Hilfe</button>
+    <button id="my-resolve-btn" type="button" style="display:none;">Erledigt</button>
     <div id="help-status"></div>
     <div id="incoming-help-alert" style="display:none;"></div>
   </div>
@@ -88,16 +95,30 @@ function setAblyKey(value) { localStorage.setItem(ABLY_KEY_STORAGE, value); }
 
 let audioCtx;
 
-function playTone(frequency, durationMs) {
+function playTone(frequency, durationMs, volume = 1) {
   audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+  // Defensive resume: if the context was created (or left) suspended - e.g. a
+  // returning participant whose first tone-triggering event is a network
+  // message rather than a click - a later user gesture elsewhere (such as the
+  // "Ton aktivieren" button) may have unlocked it since. Calling resume() on
+  // an already-running context is a harmless no-op.
+  if (audioCtx.state === 'suspended') audioCtx.resume();
   const oscillator = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
   oscillator.frequency.value = frequency;
+  gain.gain.setValueAtTime(volume, audioCtx.currentTime);
   oscillator.connect(gain);
   gain.connect(audioCtx.destination);
   oscillator.start();
   gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + durationMs / 1000);
   oscillator.stop(audioCtx.currentTime + durationMs / 1000);
+}
+
+function enableSound() {
+  audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  // Short, quiet confirmation tone so the user gets feedback that sound works.
+  playTone(440, 150, 0.15);
 }
 
 function showConnectionBanner(text) {
@@ -108,6 +129,16 @@ function showConnectionBanner(text) {
 
 function hideConnectionBanner() {
   document.getElementById('connection-banner').style.display = 'none';
+}
+
+function showError(message) {
+  const el = document.getElementById('error-banner');
+  el.textContent = message;
+  el.style.display = 'block';
+}
+
+function clearError() {
+  document.getElementById('error-banner').style.display = 'none';
 }
 
 function resolveBuddy(name, buddyPairs) {
@@ -156,7 +187,8 @@ function showBroadcastBanner(text) {
 
 function checkMilestones(elapsedMinutes) {
   if (state.role !== 'organizer') return;
-  for (const milestone of (state.config.timer.milestones || [])) {
+  const timer = state.config.timer || {};
+  for (const milestone of (timer.milestones || [])) {
     if (elapsedMinutes >= milestone.at_minute && !state.firedMilestones.has(milestone.at_minute)) {
       state.firedMilestones.add(milestone.at_minute);
       sendBroadcast(milestone.message);
@@ -197,8 +229,12 @@ function renderHelpList() {
       strong.textContent = from;
       div.appendChild(strong);
       div.appendChild(document.createTextNode(
-        ` → Buddy: ${entry.to} (${entry.status === 'escalated' ? 'ESKALIERT' : 'läuft mit Buddy'})`
+        ` → Buddy: ${entry.to} (${entry.status === 'escalated' ? 'ESKALIERT' : 'läuft mit Buddy'}) `
       ));
+      const dismissBtn = document.createElement('button');
+      dismissBtn.textContent = 'Erledigt';
+      dismissBtn.addEventListener('click', () => respondResolved(from));
+      div.appendChild(dismissBtn);
       container.appendChild(div);
     });
 }
@@ -211,15 +247,27 @@ function renderMyHelpStatus(status) {
     escalated: 'Keine Reaktion vom Buddy – an den Organizer eskaliert.',
   };
   el.textContent = labels[status] || '';
+  // "Erledigt" is only meaningful while a help request is pending (waiting
+  // for the buddy or already escalated) - hidden again once idle.
+  const resolveBtn = document.getElementById('my-resolve-btn');
+  if (resolveBtn) resolveBtn.style.display = status === 'idle' ? 'none' : 'inline';
 }
 
 function requestHelp() {
-  const timeoutMinutes = state.config.timer.buddy_timeout_minutes || 2;
+  const timer = state.config.timer || {};
+  const timeoutMinutes = timer.buddy_timeout_minutes || 2;
   state.channel.publish('help:request', { from: state.myName, to: state.myBuddy });
   renderMyHelpStatus('waiting-for-buddy');
   state.pendingHelpTimeout = setTimeout(() => {
     respondEscalate(state.myName, state.myBuddy);
   }, timeoutMinutes * 60 * 1000);
+}
+
+function resolveMyHelpRequest() {
+  respondResolved(state.myName);
+  clearTimeout(state.pendingHelpTimeout);
+  state.pendingHelpTimeout = null;
+  renderMyHelpStatus('idle');
 }
 
 function showBuddyHelpAlert(from) {
@@ -295,7 +343,7 @@ function wireOnboarding() {
   document.getElementById('name-confirm-btn').addEventListener('click', () => {
     state.role = 'participant';
     state.myName = document.getElementById('name-select').value;
-    state.myBuddy = resolveBuddy(state.myName, state.config.buddies);
+    state.myBuddy = resolveBuddy(state.myName, state.config.buddies || []);
     setRole('participant');
     setMyName(state.myName);
     render();
@@ -307,13 +355,29 @@ function ensureAblyKey() {
     const existing = getAblyKey();
     if (existing) return resolve(existing);
     const dialog = document.getElementById('ably-key-dialog');
+    const errorEl = document.getElementById('ably-key-error');
+    errorEl.style.display = 'none';
     dialog.showModal();
-    document.getElementById('ably-key-form').addEventListener('submit', () => {
+    document.getElementById('ably-key-form').addEventListener('submit', (event) => {
       const value = document.getElementById('ably-key-input').value.trim();
+      if (!value) {
+        // Reject empty submissions instead of resolving/closing - an empty
+        // key would otherwise be stored and make `new Ably.Realtime({key: ''})`
+        // throw later with no useful feedback. Keep the dialog open.
+        event.preventDefault();
+        errorEl.style.display = 'inline';
+        return;
+      }
+      errorEl.style.display = 'none';
       setAblyKey(value);
       resolve(value);
-    }, { once: true });
+    });
   });
+}
+
+function changeAblyKey() {
+  setAblyKey('');
+  location.reload();
 }
 
 function getChannelName(dojoId) {
@@ -327,13 +391,42 @@ async function connectAbly() {
   state.channel.subscribe((message) => handleIncomingEvent(message));
   state.ably.connection.on('disconnected', () => showConnectionBanner('Verbindung getrennt, verbinde neu…'));
   state.ably.connection.on('suspended', () => showConnectionBanner('Verbindung unterbrochen, verbinde neu…'));
-  state.ably.connection.on('connected', hideConnectionBanner);
+  state.ably.connection.on('failed', () => {
+    showError('Ably-Verbindung fehlgeschlagen – vermutlich ist der gespeicherte Ably-Key falsch oder abgelaufen. "Ably-Key ändern" oben klicken und erneut versuchen.');
+  });
+  state.ably.connection.on('connected', () => {
+    hideConnectionBanner();
+    // A (re)established connection means a previously shown 'failed'/init
+    // error (e.g. from a since-corrected Ably key) no longer applies.
+    clearError();
+  });
+
+  // Best-effort catch-up for late joiners/reloads (finding 4): anyone who
+  // opens or reloads the page after the organizer started the timer would
+  // otherwise see "--:--" forever, since timer:start is fire-and-forget.
+  // Ably's default channel history retention window is short (a couple of
+  // minutes) unless the Ably account has persisted history enabled on the
+  // channel, so this only helps someone who (re)joins shortly after the
+  // timer started - it does not solve someone joining 30+ minutes in.
+  state.channel.history({ limit: 10 }, (err, resultPage) => {
+    if (err) { console.warn('Ably history catch-up failed:', err); return; }
+    try {
+      const items = (resultPage && resultPage.items) || [];
+      const timerStartMsg = items.find((m) => m.name === 'timer:start');
+      if (timerStartMsg && !state.timerStartedAt) {
+        onTimerStart(timerStartMsg.data.startedAt);
+      }
+    } catch (e) {
+      console.warn('Ably history catch-up failed:', e);
+    }
+  });
 }
 
 function renderCountdown() {
   const el = document.getElementById('countdown');
   if (!state.timerStartedAt) { el.textContent = '--:--'; return; }
-  const remaining = computeMsRemaining(state.timerStartedAt, state.config.timer.duration_minutes, Date.now());
+  const timer = state.config.timer || {};
+  const remaining = computeMsRemaining(state.timerStartedAt, timer.duration_minutes || 60, Date.now());
   el.textContent = formatCountdown(remaining);
 }
 
@@ -368,8 +461,9 @@ function handleIncomingEvent(message) {
       addOrUpdateHelpEntry(data.from, data.to, 'buddy');
     }
   } else if (message.name === 'help:resolved') {
-    if (data.from === state.myName && state.pendingHelpTimeout) {
+    if (data.from === state.myName) {
       clearTimeout(state.pendingHelpTimeout);
+      state.pendingHelpTimeout = null;
       renderMyHelpStatus('idle');
     }
     if (state.role === 'organizer') {
@@ -377,6 +471,11 @@ function handleIncomingEvent(message) {
     }
   } else if (message.name === 'help:escalate') {
     if (data.from === state.myName) {
+      // The escalation just fired, so the pending auto-escalate timeout (if
+      // any) has already done its job - clear it so it can't fire again
+      // ~buddy_timeout_minutes later and re-publish a duplicate escalation.
+      clearTimeout(state.pendingHelpTimeout);
+      state.pendingHelpTimeout = null;
       renderMyHelpStatus('escalated');
     }
     if (state.role === 'organizer') {
@@ -399,17 +498,39 @@ function wireApp() {
   });
   const helpBtn = document.getElementById('help-btn');
   if (helpBtn) helpBtn.addEventListener('click', requestHelp);
+  const myResolveBtn = document.getElementById('my-resolve-btn');
+  if (myResolveBtn) myResolveBtn.addEventListener('click', resolveMyHelpRequest);
+  const soundBtn = document.getElementById('enable-sound-btn');
+  if (soundBtn) soundBtn.addEventListener('click', enableSound);
 }
 
+document.getElementById('change-ably-key-btn').addEventListener('click', changeAblyKey);
+
 async function init() {
-  state.config = await loadDojoConfig(state.dojoId);
-  if (state.role === 'participant' && state.myName) {
-    state.myBuddy = resolveBuddy(state.myName, state.config.buddies);
+  try {
+    state.config = await loadDojoConfig(state.dojoId);
+  } catch (err) {
+    showError(`config.yaml konnte nicht geladen werden: ${err.message}`);
+    return;
   }
-  wireOnboarding();
-  render();
-  wireApp();
-  await connectAbly();
+
+  try {
+    if (state.role === 'participant' && state.myName) {
+      state.myBuddy = resolveBuddy(state.myName, state.config.buddies || []);
+    }
+    wireOnboarding();
+    render();
+    wireApp();
+  } catch (err) {
+    showError(`Fehler beim Initialisieren: ${err.message}`);
+    return;
+  }
+
+  try {
+    await connectAbly();
+  } catch (err) {
+    showError(`Ably-Verbindung fehlgeschlagen: ${err.message}. "Ably-Key ändern" oben klicken und erneut versuchen.`);
+  }
 }
 
 init();
