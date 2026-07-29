@@ -226,10 +226,14 @@ veröffentlichen): siehe [SETUP.md](SETUP.md).
 
 1. URL vor dem Abend bookmarken:
    `https://<owner>.github.io/rf-dojos/viewer/?dojo=<dojo-id>`
+   – oder auf der [Startseite](README.md#mitmachen) auf den „Viewer"-Link
+   hinter dem jeweiligen Dojo klicken.
 2. Beim ersten Öffnen: GitHub Personal Access Token (Scope `public_repo`)
    eintragen. Wird nur lokal im Browser gespeichert, nie im Repo.
-3. Tastatursteuerung: `←`/`→` = Teilnehmer wechseln, `↑`/`↓` = Runde wechseln.
+3. Oben im Viewer-Header wechselst du über das Dropdown direkt zwischen
+   allen Dojos im Repo – praktisch, wenn an einem Abend versehentlich das
+   falsche Dojo geöffnet wurde.
+4. Tastatursteuerung: `←`/`→` = Teilnehmer wechseln, `↑`/`↓` = Runde wechseln.
 
-Öffnest du den Viewer ohne `?dojo=`, zeigt er nur einen Hinweis mit einem
-Link zurück zur [Startseite](README.md) – die Übersicht aller Dojos gehört
-dorthin, nicht in den Viewer.
+Öffnest du den Viewer ohne `?dojo=`, zeigt das Dropdown alle Dojos zur Auswahl;
+zusätzlich führt „Zur Startseite" zurück zur [Startseite](README.md).
