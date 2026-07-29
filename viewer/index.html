@@ -368,9 +368,60 @@ function clearError() {
   document.getElementById('error-banner').style.display = 'none';
 }
 
+function buildDojoLink(dojoId) {
+  const params = new URLSearchParams(window.location.search);
+  params.set('dojo', dojoId);
+  return `?${params.toString()}`;
+}
+
+async function loadDojoList() {
+  const owner = getRepoOwner();
+  const entries = await githubFetch(`/repos/${owner}/${REPO_NAME}/contents/dojos`);
+  const dirs = entries.filter((entry) => entry.type === 'dir');
+  const dojos = [];
+  for (const dir of dirs) {
+    let title = dir.name;
+    try {
+      const data = await githubFetch(`/repos/${owner}/${REPO_NAME}/contents/dojos/${dir.name}/config.yaml`);
+      const config = jsyaml.load(decodeBase64Utf8(data.content));
+      if (config?.dojo?.title) title = config.dojo.title;
+    } catch (err) {
+      console.warn(`Konnte config.yaml für ${dir.name} nicht laden:`, err);
+    }
+    dojos.push({ id: dir.name, title });
+  }
+  dojos.sort((a, b) => a.id.localeCompare(b.id));
+  renderDojoList(dojos);
+}
+
+function renderDojoList(dojos) {
+  document.getElementById('dojo-title').textContent = 'Dojos auswählen';
+  const content = document.getElementById('content');
+  content.innerHTML = '';
+  if (!dojos.length) {
+    content.textContent = 'Keine Dojos gefunden.';
+    return;
+  }
+  const ul = document.createElement('ul');
+  dojos.forEach((dojo) => {
+    const li = document.createElement('li');
+    const a = document.createElement('a');
+    a.href = buildDojoLink(dojo.id);
+    a.textContent = dojo.title;
+    li.appendChild(a);
+    ul.appendChild(li);
+  });
+  content.appendChild(ul);
+}
+
 async function init() {
   try {
     await ensureToken();
+    if (!state.dojoId) {
+      await loadDojoList();
+      clearError();
+      return;
+    }
     await loadConfig(state.dojoId);
     await loadOpenPRs(state.dojoId);
     clearError();
