@@ -24,14 +24,14 @@ haben.
 
 - [Anleitung für Teilnehmer](TEILNEHMER.md) – Ablauf, Regelwerk & Submission-Workflow
 - [Anleitung für Organisator](ORGANISATOR.md) – Konzept, Moderation & Viewer-Bedienung
-- [`viewer/`](viewer/) – Browserbasiertes Vergleichs-Tool für den Hyōka
 
 ## Mitmachen
 
 Diese Dojos gibt es aktuell:
 
-- [Dojo #1 – Web Testing](dojos/dojo-01-web-testing/README.md)
+- [Dojo #1 – Web Testing](dojos/dojo-01-web-testing/README.md) ([Viewer](viewer/?dojo=dojo-01-web-testing))
 
 Aufgabenstellung und Submission-Workflow stehen jeweils im README des
-Dojos, verlinkt oben. Den allgemeinen Ablauf und das Regelwerk findest du
-in der [Anleitung für Teilnehmer](TEILNEHMER.md).
+Dojos, verlinkt oben. Der Viewer-Link führt direkt zum browserbasierten
+Vergleichs-Tool für den Hyōka. Den allgemeinen Ablauf und das Regelwerk
+findest du in der [Anleitung für Teilnehmer](TEILNEHMER.md).
