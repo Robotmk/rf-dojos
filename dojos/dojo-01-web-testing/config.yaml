@@ -3,6 +3,7 @@ dojo:
   title: "Web Testing Dojo #1"
   date: "2026-07-30"
   target_app: "https://sampleapp.tricentis.com/101/"
+  explorer_blacklist: ["*_template*", "*.png", "*.pyc", "__pycache__/*"]
 
 rounds:
   - id: structure
@@ -14,31 +15,31 @@ rounds:
     title: "Test-Struktur"
     description: "Aufbau der .robot-Datei: Settings, Variables, Keywords, Test Cases"
     show: file
-    filename_pattern: "*.robot"
+    default_open: ["tests/*.robot"]
 
   - id: locators
     title: "Locator-Strategie"
     description: "Wie werden Elemente gefunden? CSS, XPath, ID, Playwright-native?"
     show: file
-    filename_pattern: "*.robot"
-    highlight: "locator|css|xpath|id="
+    default_open: ["tests/*.robot"]
+    search: "locator|css|xpath|id="
 
   - id: wait_handling
     title: "Wait-Handling"
     description: "Wie wird auf dynamische Elemente gewartet?"
     show: file
-    filename_pattern: "*.robot"
-    highlight: "Wait|sleep|timeout"
+    default_open: ["tests/*.robot"]
+    search: "Wait|sleep|timeout"
 
   - id: keywords
     title: "Custom Keywords"
     description: "Was wurde abstrahiert – und was nicht?"
     show: file
-    filename_pattern: "*.robot|*.resource"
+    default_open: ["tests/*.robot", "resources/*.resource"]
 
   - id: teardown
     title: "Teardown & Fehlerbehandlung"
     description: "Screenshot-Strategie, Cleanup, Suite Teardown"
     show: file
-    filename_pattern: "*.robot"
-    highlight: "Teardown|Screenshot|Run Keyword If Test Failed"
+    default_open: ["tests/*.robot"]
+    search: "Teardown|Screenshot|Run Keyword If Test Failed"

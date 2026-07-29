@@ -299,9 +299,35 @@ function globToRegex(glob) {
   return new RegExp(`^${escaped}$`);
 }
 
-function matchFilenamePattern(path, pattern) {
-  const filename = path.split('/').pop();
-  return pattern.split('|').some((glob) => globToRegex(glob).test(filename));
+function matchesAnyGlob(relPath, globs) {
+  if (!globs || !globs.length) return false;
+  return globs.some((glob) => globToRegex(glob).test(relPath));
+}
+
+function resolveExplorerFilter(dojoConfig, round) {
+  const blacklist = [
+    ...(dojoConfig?.explorer_blacklist || []),
+    ...(round.explorer?.blacklist || []),
+  ];
+  const whitelist = round.explorer?.whitelist || [];
+  return { blacklist, whitelist };
+}
+
+function filterExplorerPaths(relPaths, filter) {
+  return relPaths.filter((relPath) => {
+    if (filter.whitelist.length && !matchesAnyGlob(relPath, filter.whitelist)) return false;
+    if (matchesAnyGlob(relPath, filter.blacklist)) return false;
+    return true;
+  });
+}
+
+function resolveDefaultOpenPaths(relPaths, round) {
+  return relPaths.filter((relPath) => matchesAnyGlob(relPath, round.default_open || []));
+}
+
+function contentMatchesSearch(content, searchPattern) {
+  if (!searchPattern) return false;
+  return new RegExp(searchPattern, 'i').test(content);
 }
 
 async function loadFileContent(path, branch) {
