@@ -58,6 +58,7 @@
     <p id="buddy-info"></p>
     <button id="help-btn">Ich brauche Hilfe</button>
     <div id="help-status"></div>
+    <div id="incoming-help-alert" style="display:none;"></div>
   </div>
 </div>
 
@@ -157,6 +158,9 @@ function respondEscalate(from, originalBuddy) {
   state.channel.publish('help:escalate', { from, originalBuddy });
 }
 
+function addOrUpdateHelpEntry(from, to, status) { /* siehe Task 8 */ }
+function removeHelpEntry(from) { /* siehe Task 8 */ }
+
 function renderMyHelpStatus(status) {
   const el = document.getElementById('help-status');
   const labels = {
@@ -174,6 +178,25 @@ function requestHelp() {
   state.pendingHelpTimeout = setTimeout(() => {
     respondEscalate(state.myName, state.myBuddy);
   }, timeoutMinutes * 60 * 1000);
+}
+
+function showBuddyHelpAlert(from) {
+  const el = document.getElementById('incoming-help-alert');
+  el.innerHTML = `
+    <p>${from} braucht Hilfe!</p>
+    <button id="resolve-btn-${from}">Erledigt</button>
+    <button id="escalate-btn-${from}">Eskalieren</button>
+  `;
+  el.style.display = 'block';
+  playTone(880, 500);
+  document.getElementById(`resolve-btn-${from}`).addEventListener('click', () => {
+    respondResolved(from);
+    el.style.display = 'none';
+  });
+  document.getElementById(`escalate-btn-${from}`).addEventListener('click', () => {
+    respondEscalate(from, state.myName);
+    el.style.display = 'none';
+  });
 }
 
 function render() {
@@ -275,12 +298,33 @@ function onTimerStart(startedAt) {
 }
 
 function handleIncomingEvent(message) {
+  const data = message.data;
   if (message.name === 'timer:start') {
-    onTimerStart(message.data.startedAt);
+    onTimerStart(data.startedAt);
   } else if (message.name === 'broadcast') {
-    showBroadcastBanner(message.data.text);
-  } else {
-    console.log('Empfangen:', message.name, message.data);
+    showBroadcastBanner(data.text);
+  } else if (message.name === 'help:request') {
+    if (state.role === 'participant' && data.to === state.myName) {
+      showBuddyHelpAlert(data.from);
+    }
+    if (state.role === 'organizer') {
+      addOrUpdateHelpEntry(data.from, data.to, 'buddy');
+    }
+  } else if (message.name === 'help:resolved') {
+    if (data.from === state.myName && state.pendingHelpTimeout) {
+      clearTimeout(state.pendingHelpTimeout);
+      renderMyHelpStatus('idle');
+    }
+    if (state.role === 'organizer') {
+      removeHelpEntry(data.from);
+    }
+  } else if (message.name === 'help:escalate') {
+    if (data.from === state.myName) {
+      renderMyHelpStatus('escalated');
+    }
+    if (state.role === 'organizer') {
+      addOrUpdateHelpEntry(data.from, data.originalBuddy, 'escalated');
+    }
   }
 }
 
