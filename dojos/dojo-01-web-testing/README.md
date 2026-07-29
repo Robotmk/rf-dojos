@@ -30,10 +30,9 @@ Implementiere einen Robot-Framework-Test, der folgenden Ablauf testet:
 
 ## Workflow
 
-1. Repo forken: `github.com/[owner]/rf-dojos`
-2. Branch anlegen: `git checkout -b dojo-01/[github-username]`
-3. Template kopieren:
-   `cp -r dojos/dojo-01-web-testing/submissions/_template dojos/dojo-01-web-testing/submissions/[github-username]`
-4. Test implementieren in `submissions/[github-username]/`
-5. Committen, pushen, PR öffnen gegen `main` des Original-Repos
-   - PR-Titel: `[dojo-01-web-testing] [github-username]`
+Der allgemeine Ablauf (Fork, Branch, Template kopieren, PR) und das
+Regelwerk stehen in der [Anleitung für Teilnehmer](../../TEILNEHMER.md).
+Für dieses Dojo gilt:
+
+- Dojo-ID: `dojo-01-web-testing`
+- PR-Titel: `[dojo-01-web-testing] [github-username]`

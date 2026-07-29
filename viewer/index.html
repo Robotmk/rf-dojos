@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>🥋 RFUGM Dojo Viewer</title>
+<title>RFUGM Dojo Viewer</title>
 <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
 <style>
   :root { --border: #d0d7de; --bg-nav: #f6f8fa; --accent: #0969da; }
@@ -33,9 +33,10 @@
 <body>
 <header>
   <img class="logo" src="logo.png" alt="RFUGM Logo">
-  <h1>🥋 RFUGM Dojo Viewer</h1>
+  <h1>RFUGM Dojo Viewer</h1>
   <span id="dojo-title"></span>
-  <button id="change-token-btn" type="button" style="margin-left:auto;">Token ändern</button>
+  <a href="../" style="margin-left:auto;">Zur Startseite</a>
+  <button id="change-token-btn" type="button">Token ändern</button>
 </header>
 <div id="error-banner" style="display:none; background:#ffebe9; color:#82071e; padding:0.5rem 1rem; border-bottom:1px solid #ffc1c1;"></div>
 <div id="layout">
@@ -370,63 +371,21 @@ function clearError() {
   document.getElementById('error-banner').style.display = 'none';
 }
 
-function buildDojoLink(dojoId) {
-  const params = new URLSearchParams(window.location.search);
-  params.set('dojo', dojoId);
-  return `?${params.toString()}`;
-}
-
-async function loadDojoList() {
-  const owner = getRepoOwner();
-  if (!owner) {
-    throw new Error('Repo-Owner unbekannt — bitte ?owner=<github-user> an die URL anhängen.');
-  }
-  const entries = await githubFetch(`/repos/${owner}/${REPO_NAME}/contents/dojos`);
-  const dirs = entries.filter((entry) => entry.type === 'dir');
-  const dojos = [];
-  for (const dir of dirs) {
-    let title = dir.name;
-    try {
-      const data = await githubFetch(`/repos/${owner}/${REPO_NAME}/contents/dojos/${dir.name}/config.yaml`);
-      const config = jsyaml.load(decodeBase64Utf8(data.content));
-      if (config?.dojo?.title) title = config.dojo.title;
-    } catch (err) {
-      console.warn(`Konnte config.yaml für ${dir.name} nicht laden:`, err);
-    }
-    dojos.push({ id: dir.name, title });
-  }
-  dojos.sort((a, b) => a.id.localeCompare(b.id));
-  renderDojoList(dojos);
-}
-
-function renderDojoList(dojos) {
-  document.getElementById('dojo-title').textContent = 'Dojos auswählen';
+function renderNoDojoMessage() {
   const content = document.getElementById('content');
   content.innerHTML = '';
-  if (!dojos.length) {
-    content.textContent = 'Keine Dojos gefunden.';
-    return;
-  }
-  const ul = document.createElement('ul');
-  dojos.forEach((dojo) => {
-    const li = document.createElement('li');
-    const a = document.createElement('a');
-    a.href = buildDojoLink(dojo.id);
-    a.textContent = dojo.title;
-    li.appendChild(a);
-    ul.appendChild(li);
-  });
-  content.appendChild(ul);
+  const p = document.createElement('p');
+  p.innerHTML = 'Kein Dojo ausgewählt. Die Übersicht aller Dojos steht auf der <a href="../">Startseite</a>.';
+  content.appendChild(p);
 }
 
 async function init() {
+  if (!state.dojoId) {
+    renderNoDojoMessage();
+    return;
+  }
   try {
     await ensureToken();
-    if (!state.dojoId) {
-      await loadDojoList();
-      clearError();
-      return;
-    }
     await loadConfig(state.dojoId);
     await loadOpenPRs(state.dojoId);
     clearError();
