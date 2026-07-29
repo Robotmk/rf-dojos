@@ -49,6 +49,10 @@
   <div id="countdown">--:--</div>
   <div id="organizer-panel" style="display:none;">
     <button id="start-timer-btn">Keiko starten (60 Min)</button>
+    <div>
+      <input type="text" id="broadcast-input" placeholder="Nachricht an alle...">
+      <button id="broadcast-send-btn">Senden</button>
+    </div>
   </div>
   <div id="participant-panel" style="display:none;">
     <p id="buddy-info"></p>
@@ -78,6 +82,20 @@ function setMyName(value) { localStorage.setItem(NAME_KEY, value); }
 function getAblyKey() { return localStorage.getItem(ABLY_KEY_STORAGE) || ''; }
 function setAblyKey(value) { localStorage.setItem(ABLY_KEY_STORAGE, value); }
 
+let audioCtx;
+
+function playTone(frequency, durationMs) {
+  audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+  const oscillator = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  oscillator.frequency.value = frequency;
+  oscillator.connect(gain);
+  gain.connect(audioCtx.destination);
+  oscillator.start();
+  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + durationMs / 1000);
+  oscillator.stop(audioCtx.currentTime + durationMs / 1000);
+}
+
 const state = {
   dojoId: getUrlParam('dojo'),
   config: null,
@@ -103,6 +121,14 @@ function formatCountdown(msRemaining) {
 
 function sendBroadcast(text) {
   state.channel.publish('broadcast', { text });
+}
+
+function showBroadcastBanner(text) {
+  const banner = document.getElementById('broadcast-banner');
+  banner.textContent = text;
+  banner.style.display = 'block';
+  playTone(660, 300);
+  setTimeout(() => { banner.style.display = 'none'; }, 10000);
 }
 
 function checkMilestones(elapsedMinutes) {
@@ -212,6 +238,8 @@ function onTimerStart(startedAt) {
 function handleIncomingEvent(message) {
   if (message.name === 'timer:start') {
     onTimerStart(message.data.startedAt);
+  } else if (message.name === 'broadcast') {
+    showBroadcastBanner(message.data.text);
   } else {
     console.log('Empfangen:', message.name, message.data);
   }
@@ -220,6 +248,14 @@ function handleIncomingEvent(message) {
 function wireApp() {
   const startBtn = document.getElementById('start-timer-btn');
   if (startBtn) startBtn.addEventListener('click', startTimer);
+  const sendBtn = document.getElementById('broadcast-send-btn');
+  if (sendBtn) sendBtn.addEventListener('click', () => {
+    const input = document.getElementById('broadcast-input');
+    if (input.value.trim()) {
+      sendBroadcast(input.value.trim());
+      input.value = '';
+    }
+  });
 }
 
 async function init() {
