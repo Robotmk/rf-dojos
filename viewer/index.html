@@ -223,6 +223,10 @@ async function loadOpenPRs(dojoId) {
     .map((pr) => ({
       username: pr.title.slice(titlePrefix.length).trim(),
       branch: pr.head.ref,
+      // Teilnehmer forken das Repo (siehe TEILNEHMER.md) - der Branch liegt
+      // also im Fork, nicht im Original-Repo. Ohne head.repo (z.B. Fork
+      // gelöscht) bleibt nur der Fallback auf den Original-Owner.
+      repoOwner: pr.head.repo ? pr.head.repo.owner.login : owner,
       number: pr.number,
     }))
     .sort((a, b) => a.username.localeCompare(b.username));
@@ -242,9 +246,10 @@ function buildTreeFromPaths(paths) {
   return root;
 }
 
-async function loadFileTree(branch) {
-  const owner = getRepoOwner();
-  const data = await githubFetch(`/repos/${owner}/${REPO_NAME}/git/trees/${branch}?recursive=1`);
+async function loadFileTree(owner, branch) {
+  // Branch-Namen enthalten laut Workflow ein "/" (<dojo-id>/<username>) - muss
+  // im Pfad-Segment encodiert werden, sonst schlägt die Ref-Auflösung fehl.
+  const data = await githubFetch(`/repos/${owner}/${REPO_NAME}/git/trees/${encodeURIComponent(branch)}?recursive=1`);
   return data.tree.filter((entry) => entry.type === 'blob').map((entry) => entry.path);
 }
 
@@ -263,9 +268,8 @@ function matchFilenamePattern(path, pattern) {
   return pattern.split('|').some((glob) => globToRegex(glob).test(filename));
 }
 
-async function loadFileContent(path, branch) {
-  const owner = getRepoOwner();
-  const data = await githubFetch(`/repos/${owner}/${REPO_NAME}/contents/${path}?ref=${branch}`);
+async function loadFileContent(owner, path, branch) {
+  const data = await githubFetch(`/repos/${owner}/${REPO_NAME}/contents/${path}?ref=${encodeURIComponent(branch)}`);
   return decodeBase64Utf8(data.content);
 }
 
@@ -278,7 +282,7 @@ function highlightLines(codeHtml, pattern) {
   }).join('\n');
 }
 
-async function renderFileView(container, paths, branch, filenamePattern, highlightPattern, seq) {
+async function renderFileView(container, paths, owner, branch, filenamePattern, highlightPattern, seq) {
   const matching = paths.filter((p) => matchFilenamePattern(p, filenamePattern));
   container.innerHTML = '';
   if (!matching.length) {
@@ -288,7 +292,7 @@ async function renderFileView(container, paths, branch, filenamePattern, highlig
     return;
   }
   for (const path of matching) {
-    const raw = await loadFileContent(path, branch);
+    const raw = await loadFileContent(owner, path, branch);
     if (seq !== renderSeq) return; // a newer render superseded this one; abandon silently
     const escaped = escapeHtml(raw);
     const pre = document.createElement('pre');
@@ -327,7 +331,7 @@ async function renderContent() {
   if (!round || !pr) { content.innerHTML = ''; return; }
   try {
     const prefix = `dojos/${state.dojoId}/submissions/${pr.username}/`;
-    const paths = (await loadFileTree(pr.branch)).filter((p) => p.startsWith(prefix));
+    const paths = (await loadFileTree(pr.repoOwner, pr.branch)).filter((p) => p.startsWith(prefix));
     if (seq !== renderSeq) return; // a newer render superseded this one; abandon silently
     if (!paths.length) {
       content.innerHTML = `<p>Keine Dateien unter ${escapeHtml(prefix)} gefunden.</p>`;
@@ -337,7 +341,7 @@ async function renderContent() {
     if (round.show === 'tree') {
       renderTreeView(content, paths);
     } else if (round.show === 'file') {
-      await renderFileView(content, paths, pr.branch, round.filename_pattern, round.highlight, seq);
+      await renderFileView(content, paths, pr.repoOwner, pr.branch, round.filename_pattern, round.highlight, seq);
     }
     if (seq !== renderSeq) return;
     clearError();
