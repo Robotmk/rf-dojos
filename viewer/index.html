@@ -20,6 +20,7 @@
     --bg-page: #ffffff; --text: #1f2328; --search-hit-bg: #fff8c5;
     --error-bg: #ffebe9; --error-text: #82071e; --error-border: #ffc1c1;
     --accent-fg: #ffffff; --accent-fg-muted: #d0d7de; --text-muted: #57606a;
+    --tab-active-bg: #57606a; --tab-active-fg: #ffffff;
   }
   :root[data-theme="dark"] {
     color-scheme: dark;
@@ -27,6 +28,7 @@
     --bg-page: #0d1117; --text: #c9d1d9; --search-hit-bg: #4d3800;
     --error-bg: #3d1a1a; --error-text: #ffb3ab; --error-border: #6e2c2c;
     --accent-fg: #0d1117; --accent-fg-muted: #24292f; --text-muted: #8b949e;
+    --tab-active-bg: #6e7681; --tab-active-fg: #ffffff;
   }
   * { box-sizing: border-box; }
   body { margin: 0; font-family: -apple-system, Segoe UI, sans-serif; background: var(--bg-page); color: var(--text); }
@@ -46,7 +48,7 @@
   #main { display: flex; flex-direction: column; overflow: hidden; }
   #participant-tabs { display: flex; gap: 0.25rem; padding: 0.5rem 1rem; border-bottom: 1px solid var(--border); overflow-x: auto; }
   #participant-tabs button { border: 1px solid var(--border); background: var(--bg-page); border-radius: 6px; padding: 0.35rem 0.75rem; cursor: pointer; color: var(--text); }
-  #participant-tabs button.active { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+  #participant-tabs button.active { background: var(--tab-active-bg); color: var(--tab-active-fg); border-color: var(--tab-active-bg); }
   #content { flex: 1; overflow: auto; padding: 1rem; }
   #status-bar { padding: 0.25rem 1rem; font-size: 0.85rem; color: var(--text-muted); border-top: 1px solid var(--border); }
   dialog#token-dialog { border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; background: var(--bg-page); color: var(--text); }
