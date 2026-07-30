@@ -88,3 +88,13 @@ Dein Arbeitsverzeichnis: `dojos/<dojo-id>/submissions/<dein-github-username>/`
 Wir setzen uns zusammen und sehen uns mit dem [Viewer](viewer/) alle eingereichten PRs an.  
 Hierbei gehen wir thematisch vor: z.b. Verzeichnisstruktur, Locator-Strategie, Custom Keywords, ... .  
 Du musst dafür nichts weiter tun – sobald dein PR gepushed ist, taucht deine Lösung automatisch dort auf.
+
+
+### Phase 3: Zanshin (Abschlussrunde)
+
+Kontrollfragen: 
+
+- Was habe ich heute gelernt?
+- Was kann ich beim nächsten Mal besser machen?
+- Wie kann das Dojo-Format noch besser werden?
+- Vorschläge für die nächste Dojo-Session? 
