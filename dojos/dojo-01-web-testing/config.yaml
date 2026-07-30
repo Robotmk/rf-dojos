@@ -16,13 +16,58 @@ rounds:
     #   blacklist: ["*.md"]               # rundenspezifisch, zusätzlich zum dojo-weiten explorer_blacklist
     #   whitelist: ["tests/*", "resources/*"]  # falls gesetzt: NUR diese Dateien werden überhaupt angezeigt    
 
-  - id: locators
-    title: "Locator-Strategie"
-    description: "Wie werden Elemente gefunden?"
+  - id: browserlib
+    title: "Browser Library"
+    description: "Import Parameter, Browser-Optionen, Headless, Browser-Version, ..."
     show: file
-    default_open: ["tests/*.robot"]     # welche Datei(en) beim Öffnen der Runde aktiv sind
-    explorer:
-      blacklist: ["*.md"]               # rundenspezifisch, zusätzlich zum dojo-weiten explorer_blacklist
-      whitelist: ["tests/*", "resources/*"]  # falls gesetzt: NUR diese Dateien werden überhaupt angezeigt
-    search: "locator|css|xpath|id="     # markiert Dateien mit Treffern im Explorer (🔶)
-  # ... weitere Runden, siehe bestehende config.yaml als Vorlage
+    default_open: ["*.robot", "*.resource"]       
+    search: "Library\\s+Browser|headless"     # markiert Dateien mit Treffern im Explorer (🔶)
+
+  - id: highlevel_kw
+    title: "Testcase"
+    description: "Aufbau des Testcases, High-Level Keywords, Struktur, Lesbarkeit"
+    show: file
+    default_open: ["*.robot", "*.resource"]       
+    search: "Test Case|Test Cases"   
+  
+  - id: vehicle_data
+    title: "Eingabe 'Vehicle Data'"
+    description: "Datum, Dropdown, Radio Buttons"
+    show: file
+    default_open: ["*.robot", "*.resource"]       
+    # search: "Fill Text"     # markiert Dateien mit Treffern im Explorer (🔶)
+
+  - id: insurant_data
+    title: "Eingabe 'Insurant Data'"
+    description: "valides Geburtsdatum, Checkboxen"
+    show: file
+    default_open: ["*.robot", "*.resource"]       
+    # search: "Fill Text"     # markiert Dateien mit Treffern im Explorer (🔶)
+
+  - id: product_data
+    title: "Eingabe 'Product Data'"
+    description: "valides Startdatum, Checkbox-Selektor"
+    show: file
+    default_open: ["*.robot", "*.resource"]       
+    # search: "Fill Text"     # markiert Dateien mit Treffern im Explorer (🔶)
+
+  - id: price_option
+    title: "Eingabe 'Price Option'"
+    description: "Checkbox-Selektor"
+    show: file
+    default_open: ["*.robot", "*.resource"]       
+    # search: "Fill Text"     # markiert Dateien mit Treffern im Explorer (🔶)
+
+  - id: send_quote
+    title: "Send Quote"
+    description: "Warten auf Versandbestätigung"
+    show: file
+    default_open: ["*.robot", "*.resource"]       
+    # search: "Fill Text"     # markiert Dateien mit Treffern im Explorer (🔶)
+
+  - id: screenshots
+    title: "Browser Library"
+    description: "Screenshots on Failure"
+    show: file
+    default_open: ["*.robot", "*.resource"]       
+    search: "run_on_failure|Screenshot"     # markiert Dateien mit Treffern im Explorer (🔶)
