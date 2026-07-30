@@ -11,36 +11,18 @@ rounds:
     description: "Wie wurde Robot Framework installiert? Welche Libraries? Welche Versionen?"
     show: file
     default_open: ["conda.yaml", "requirements.txt", "*.toml", "*.ini", "*.cfg", "package.json", "pyproject.toml", "Pipfile", "Pipfile.lock", "poetry.lock"]
-
-  - id: test_structure
-    title: "Test-Struktur"
-    description: "Aufbau der .robot-Datei: Settings, Variables, Keywords, Test Cases"
-    show: file
-    default_open: ["tests/*.robot"]
+    search: "robotframework-browser"
+    # explorer:
+    #   blacklist: ["*.md"]               # rundenspezifisch, zusätzlich zum dojo-weiten explorer_blacklist
+    #   whitelist: ["tests/*", "resources/*"]  # falls gesetzt: NUR diese Dateien werden überhaupt angezeigt    
 
   - id: locators
     title: "Locator-Strategie"
-    description: "Wie werden Elemente gefunden? CSS, XPath, ID, Playwright-native?"
+    description: "Wie werden Elemente gefunden?"
     show: file
-    default_open: ["tests/*.robot"]
-    search: "locator|css|xpath|id="
-
-  - id: wait_handling
-    title: "Wait-Handling"
-    description: "Wie wird auf dynamische Elemente gewartet?"
-    show: file
-    default_open: ["tests/*.robot"]
-    search: "Wait|sleep|timeout"
-
-  - id: keywords
-    title: "Custom Keywords"
-    description: "Was wurde abstrahiert – und was nicht?"
-    show: file
-    default_open: ["tests/*.robot", "resources/*.resource"]
-
-  - id: teardown
-    title: "Teardown & Fehlerbehandlung"
-    description: "Screenshot-Strategie, Cleanup, Suite Teardown"
-    show: file
-    default_open: ["tests/*.robot"]
-    search: "Teardown|Screenshot|Run Keyword If Test Failed"
+    default_open: ["tests/*.robot"]     # welche Datei(en) beim Öffnen der Runde aktiv sind
+    explorer:
+      blacklist: ["*.md"]               # rundenspezifisch, zusätzlich zum dojo-weiten explorer_blacklist
+      whitelist: ["tests/*", "resources/*"]  # falls gesetzt: NUR diese Dateien werden überhaupt angezeigt
+    search: "locator|css|xpath|id="     # markiert Dateien mit Treffern im Explorer (🔶)
+  # ... weitere Runden, siehe bestehende config.yaml als Vorlage
