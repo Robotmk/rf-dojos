@@ -33,6 +33,11 @@
   #file-view { display: flex; height: 100%; }
   #explorer { width: 220px; border-right: 1px solid var(--border); overflow-y: auto; padding: 0.5rem; flex-shrink: 0; }
   #editor-pane { flex: 1; min-width: 0; }
+  #explorer ul { list-style: none; margin: 0; padding-left: 1rem; }
+  #explorer > ul { padding-left: 0; }
+  #explorer li.file { cursor: pointer; padding: 0.1rem 0; }
+  #explorer li.file:hover { text-decoration: underline; }
+  #explorer li.file.active { font-weight: 600; color: var(--accent); }
 </style>
 </head>
 <body>
@@ -127,6 +132,7 @@ const state = {
   prs: [],
   currentRoundIndex: 0,
   currentParticipantIndex: 0,
+  activeTabPath: null,
 };
 
 function selectParticipant(index) {
@@ -283,6 +289,36 @@ function buildTreeFromPaths(paths) {
   return root;
 }
 
+function renderExplorerNode(name, subtree, fullRelPath, activeRelPath, onSelect) {
+  const escapedName = escapeHtml(name);
+  if (subtree === null) {
+    const li = document.createElement('li');
+    li.className = 'file' + (fullRelPath === activeRelPath ? ' active' : '');
+    li.textContent = name;
+    li.addEventListener('click', () => onSelect(fullRelPath));
+    return li;
+  }
+  const li = document.createElement('li');
+  li.textContent = name + '/';
+  const ul = document.createElement('ul');
+  Object.entries(subtree).forEach(([childName, childSubtree]) => {
+    const childPath = fullRelPath ? `${fullRelPath}/${childName}` : childName;
+    ul.appendChild(renderExplorerNode(childName, childSubtree, childPath, activeRelPath, onSelect));
+  });
+  li.appendChild(ul);
+  return li;
+}
+
+function renderExplorerTree(container, relPaths, activeRelPath, onSelect) {
+  const tree = buildTreeFromPaths(relPaths);
+  container.innerHTML = '';
+  const ul = document.createElement('ul');
+  Object.entries(tree).forEach(([name, subtree]) => {
+    ul.appendChild(renderExplorerNode(name, subtree, name, activeRelPath, onSelect));
+  });
+  container.appendChild(ul);
+}
+
 async function loadFileTree(branch) {
   const owner = getRepoOwner();
   const data = await githubFetch(`/repos/${owner}/${REPO_NAME}/git/trees/${branch}?recursive=1`);
@@ -377,8 +413,20 @@ async function renderContent() {
     } else if (round.show === 'file') {
       const prefixLen = prefix.length;
       const relPaths = paths.map((p) => p.slice(prefixLen));
-      if (relPaths.length) {
-        await openFileInEditor(relPaths[0], paths[0], pr.branch);
+      const absoluteByRel = new Map(paths.map((p) => [p.slice(prefixLen), p]));
+      const filter = resolveExplorerFilter(state.config.dojo, round);
+      const visibleRelPaths = filterExplorerPaths(relPaths, filter);
+      const activeRelPath = state.activeTabPath && visibleRelPaths.includes(state.activeTabPath)
+        ? state.activeTabPath
+        : visibleRelPaths[0];
+      renderExplorerTree(document.getElementById('explorer'), visibleRelPaths, activeRelPath, (relPath) => {
+        state.activeTabPath = relPath;
+        openFileInEditor(relPath, absoluteByRel.get(relPath), pr.branch);
+        renderContent();
+      });
+      if (activeRelPath) {
+        state.activeTabPath = activeRelPath;
+        await openFileInEditor(activeRelPath, absoluteByRel.get(activeRelPath), pr.branch);
       }
     }
     if (seq !== renderSeq) return;
