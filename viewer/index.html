@@ -56,11 +56,14 @@
   #dojo-select { margin-left: auto; padding: 0.3rem 0.5rem; }
   #file-view { display: flex; height: 100%; }
   #explorer { width: 220px; border-right: 1px solid var(--border); overflow-y: auto; padding: 0.5rem; flex-shrink: 0; }
-  #explorer ul { list-style: none; margin: 0; padding-left: 1rem; }
-  #explorer > ul { padding-left: 0; }
-  #explorer li.file { cursor: pointer; padding: 0.1rem 0; }
-  #explorer li.file:hover { text-decoration: underline; }
-  #explorer li.file.active { font-weight: 600; color: var(--accent); }
+  #explorer ul { list-style: none; margin: 0; padding-left: 1rem; border-left: 1px solid var(--border); }
+  #explorer > ul { padding-left: 0; border-left: none; }
+  #explorer li { padding: 0.15rem 0.4rem; border-radius: 4px; }
+  #explorer li.folder { color: var(--text-muted); }
+  #explorer li.file { cursor: pointer; }
+  #explorer li.file:hover { background: var(--bg-nav); }
+  #explorer li.file.search-match { font-weight: 700; color: var(--accent); }
+  #explorer li.file.active { background: var(--accent); color: var(--accent-fg); font-weight: 600; }
   #file-view-main { display: flex; flex-direction: column; flex: 1; min-width: 0; }
   #tab-bar { display: flex; gap: 0.25rem; padding: 0.25rem 0.5rem; border-bottom: 1px solid var(--border); overflow-x: auto; flex-shrink: 0; }
   #tab-bar .tab { display: flex; align-items: center; gap: 0.35rem; border: 1px solid var(--border); border-radius: 6px; padding: 0.2rem 0.5rem; background: var(--bg-page); cursor: pointer; font-size: 0.85rem; color: var(--text); }
@@ -531,12 +534,16 @@ function buildTreeFromPaths(paths) {
 function renderExplorerNode(name, subtree, fullRelPath, activeRelPath, matchingRelPaths, onSelect) {
   if (subtree === null) {
     const li = document.createElement('li');
-    li.className = 'file' + (fullRelPath === activeRelPath ? ' active' : '');
-    li.textContent = matchingRelPaths.has(fullRelPath) ? `🔶 ${name}` : name;
+    const classes = ['file'];
+    if (fullRelPath === activeRelPath) classes.push('active');
+    if (matchingRelPaths.has(fullRelPath)) classes.push('search-match');
+    li.className = classes.join(' ');
+    li.textContent = name;
     li.addEventListener('click', () => onSelect(fullRelPath));
     return li;
   }
   const li = document.createElement('li');
+  li.className = 'folder';
   li.textContent = name + '/';
   const ul = document.createElement('ul');
   Object.entries(subtree).forEach(([childName, childSubtree]) => {
