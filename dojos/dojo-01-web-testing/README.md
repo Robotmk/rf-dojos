@@ -1,5 +1,7 @@
 # Dojo #1 – Web Testing (30.07.2026)
 
+(zurück zur [Startseite](https://robotmk.github.io/rf-dojos/))
+
 **Ziel-Applikation:** https://sampleapp.tricentis.com/101/
 
 ## Workflow
@@ -12,9 +14,22 @@ Regelwerk stehen in der [Anleitung für Teilnehmer](../../TEILNEHMER.md).
 - Dojo-ID: `dojo-01-web-testing`
 - PR-Titel: `[dojo-01-web-testing] [dein-github-username]`
 
-## Deine Aufgabe
+## Deine Aufgaben
 
-Implementiere einen Robot-Framework-Test, der den Angebots-Rechner der Versicherung testet, indem er die Formularseiten ausfüllt und die Bestätigung überprüft: 
+### Environment
+
+Bevor Du mit der Implemtierung beginnst, brauchst Du: 
+
+- Python
+- NodeJS 
+- Robot Framework 
+- Browser Library
+
+Bereite das Environment vor und lege die dafür notwendigen Dateien (zb. conda.yaml oder requirements.txt) in deinem Submission-Ordner ab.
+
+### Implementierung 
+
+Implementiere nun einen Robot-Framework-Test, der den Angebots-Rechner der Versicherung testet, indem er die Formularseiten ausfüllt und die Bestätigung überprüft: 
 
 - Vehicle Data: 
   - Make: Audi

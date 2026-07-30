@@ -3,13 +3,14 @@ dojo:
   title: "Web Testing Dojo #1"
   date: "2026-07-30"
   target_app: "https://sampleapp.tricentis.com/101/"
-  explorer_blacklist: ["*.png", "*.jpg", "*.gif", "*.zip", "*.pyc", "*__pycache__/*", "output.xml", "log.html", "report.html", ".git*"]
+  explorer_blacklist: ["*.png", "*.jpg", "*.gif", "*.zip", "*.pyc", "*__pycache__/*", "output.xml", "log.html", "report.html", ".git*", "README.md"]
 
 rounds:
-  - id: structure
-    title: "Verzeichnisstruktur"
-    description: "Wie ist das Projekt aufgebaut?"
-    show: tree
+  - id: environment
+    title: "Environment"
+    description: "Wie wurde Robot Framework installiert? Welche Libraries? Welche Versionen?"
+    show: file
+    default_open: ["conda.yaml", "requirements.txt", "*.toml", "*.ini", "*.cfg", "package.json", "pyproject.toml", "Pipfile", "Pipfile.lock", "poetry.lock"]
 
   - id: test_structure
     title: "Test-Struktur"
