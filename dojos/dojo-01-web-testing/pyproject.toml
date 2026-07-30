@@ -1,0 +1,16 @@
+[project]
+name = "dojo-01-web-testing"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "robotframework>=7.4.2",
+    "robotframework-browser>=20.1.0",
+    "robotframework-robocop>=8.4.1",
+]
+
+[tool.uv.workspace]
+members = [
+    "submissions/florianjocham",
+]

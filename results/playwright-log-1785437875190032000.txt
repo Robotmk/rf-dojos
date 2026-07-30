@@ -1,0 +1,66 @@
+{"level":"info","time":"2026-07-30T18:57:56.022Z","seq":1,"component":"browser-library","msg":"Listening on 127.0.0.1:51795"}
+{"level":"info","time":"2026-07-30T18:57:56.355Z","seq":2,"component":"browser-library","event_kind":"grpc","action":"newBrowser","status":"started"}
+{"level":"info","time":"2026-07-30T18:57:56.640Z","seq":3,"component":"browser-library","msg":"Adding browser to stack: chromium, version: 149.0.7827.55"}
+{"level":"info","time":"2026-07-30T18:57:56.641Z","seq":4,"component":"browser-library","msg":"Adding 0 contexts to browser"}
+{"level":"info","time":"2026-07-30T18:57:56.641Z","seq":5,"component":"browser-library","event_kind":"grpc","action":"newBrowser","status":"succeeded"}
+{"level":"info","time":"2026-07-30T18:57:56.649Z","seq":6,"component":"browser-library","event_kind":"grpc","action":"newContext","status":"started"}
+{"level":"info","time":"2026-07-30T18:57:56.649Z","seq":7,"component":"browser-library","msg":"Creating new context with options: {\"acceptDownloads\":true,\"bypassCSP\":true,\"forcedColors\":\"none\",\"ignoreHTTPSErrors\":false,\"javaScriptEnabled\":true,\"offline\":false,\"reducedMotion\":\"no-preference\",\"serviceWorkers\":\"allow\",\"viewport\":{\"width\":1280,\"height\":720}}"}
+{"level":"info","time":"2026-07-30T18:57:56.650Z","seq":8,"component":"browser-library","msg":"currentBrowser: {\"_contextStack\":[],\"browser\":{\"_type\":\"Browser\",\"_guid\":\"browser@9c082bb05f85699bee917c8fc670c3ce\"},\"name\":\"chromium\",\"id\":\"browser=f55db8ee-1766-458d-af5e-a5b1a38900ad\",\"headless\":false}"}
+{"level":"info","time":"2026-07-30T18:57:56.650Z","seq":9,"component":"browser-library","msg":"Trace file: "}
+{"level":"info","time":"2026-07-30T18:57:56.663Z","seq":10,"component":"browser-library","msg":"Setting default timeout for context context=aaf3e937-e288-477f-a1df-faa39769d653 to 10000"}
+{"level":"info","time":"2026-07-30T18:57:56.664Z","seq":11,"component":"browser-library","msg":"Changed active context: context=aaf3e937-e288-477f-a1df-faa39769d653"}
+{"level":"info","time":"2026-07-30T18:57:56.664Z","seq":12,"component":"browser-library","event_kind":"grpc","action":"newContext","status":"succeeded"}
+{"level":"info","time":"2026-07-30T18:57:56.670Z","seq":13,"component":"browser-library","event_kind":"grpc","action":"newPage","status":"started"}
+{"level":"info","time":"2026-07-30T18:57:56.670Z","seq":14,"component":"browser-library","msg":"currentBrowser: {\"_contextStack\":[{\"id\":\"context=aaf3e937-e288-477f-a1df-faa39769d653\",\"c\":{\"_type\":\"BrowserContext\",\"_guid\":\"browser-context@9ff0f891f588d4587aeb42ce67effdb4\"},\"pageStack\":[],\"options\":{\"acceptDownloads\":true,\"bypassCSP\":true,\"forcedColors\":\"none\",\"ignoreHTTPSErrors\":false,\"javaScriptEnabled\":true,\"offline\":false,\"reducedMotion\":\"no-preference\",\"serviceWorkers\":\"allow\",\"viewport\":{\"width\":1280,\"height\":720}},\"traceFile\":\"\"}],\"browser\":{\"_type\":\"Browser\",\"_guid\":\"browser@9c082bb05f85699bee917c8fc670c3ce\"},\"name\":\"chromium\",\"id\":\"browser=f55db8ee-1766-458d-af5e-a5b1a38900ad\",\"headless\":false}"}
+{"level":"info","time":"2026-07-30T18:57:56.875Z","seq":15,"component":"browser-library","msg":"Video path: undefined"}
+{"level":"info","time":"2026-07-30T18:57:56.876Z","seq":16,"component":"browser-library","msg":"Changed active page"}
+{"level":"info","time":"2026-07-30T18:57:59.238Z","seq":17,"component":"browser-library","event_kind":"grpc","action":"newPage","status":"succeeded"}
+{"level":"info","time":"2026-07-30T18:57:59.248Z","seq":18,"component":"browser-library","event_kind":"grpc","action":"selectOption","status":"started"}
+{"level":"info","time":"2026-07-30T18:57:59.248Z","seq":19,"component":"browser-library","msg":"Strict mode is enabled, find Locator with css=#make in page."}
+{"level":"info","time":"2026-07-30T18:57:59.330Z","seq":20,"component":"browser-library","msg":"Option entries: 16"}
+{"level":"info","time":"2026-07-30T18:57:59.330Z","seq":21,"component":"browser-library","msg":"Selected entries: 1"}
+{"level":"info","time":"2026-07-30T18:57:59.330Z","seq":22,"component":"browser-library","event_kind":"grpc","action":"selectOption","status":"succeeded"}
+{"level":"info","time":"2026-07-30T18:57:59.337Z","seq":23,"component":"browser-library","event_kind":"grpc","action":"fillText","status":"started"}
+{"level":"info","time":"2026-07-30T18:57:59.337Z","seq":24,"component":"browser-library","msg":"Strict mode is enabled, find Locator with #engineperformance in page."}
+{"level":"info","time":"2026-07-30T18:57:59.354Z","seq":25,"component":"browser-library","event_kind":"grpc","action":"fillText","status":"succeeded"}
+{"level":"info","time":"2026-07-30T18:57:59.359Z","seq":26,"component":"browser-library","event_kind":"grpc","action":"fillText","status":"started"}
+{"level":"info","time":"2026-07-30T18:57:59.359Z","seq":27,"component":"browser-library","msg":"Strict mode is enabled, find Locator with #dateofmanufacture in page."}
+{"level":"info","time":"2026-07-30T18:57:59.375Z","seq":28,"component":"browser-library","event_kind":"grpc","action":"fillText","status":"succeeded"}
+{"level":"info","time":"2026-07-30T18:57:59.382Z","seq":29,"component":"browser-library","event_kind":"grpc","action":"selectOption","status":"started"}
+{"level":"info","time":"2026-07-30T18:57:59.382Z","seq":30,"component":"browser-library","msg":"Strict mode is enabled, find Locator with css=#numberofseats in page."}
+{"level":"info","time":"2026-07-30T18:57:59.403Z","seq":31,"component":"browser-library","msg":"Option entries: 10"}
+{"level":"info","time":"2026-07-30T18:57:59.403Z","seq":32,"component":"browser-library","msg":"Selected entries: 1"}
+{"level":"info","time":"2026-07-30T18:57:59.403Z","seq":33,"component":"browser-library","event_kind":"grpc","action":"selectOption","status":"succeeded"}
+{"level":"info","time":"2026-07-30T18:57:59.408Z","seq":34,"component":"browser-library","event_kind":"grpc","action":"selectOption","status":"started"}
+{"level":"info","time":"2026-07-30T18:57:59.408Z","seq":35,"component":"browser-library","msg":"Strict mode is enabled, find Locator with css=#fuel in page."}
+{"level":"info","time":"2026-07-30T18:57:59.428Z","seq":36,"component":"browser-library","msg":"Option entries: 6"}
+{"level":"info","time":"2026-07-30T18:57:59.428Z","seq":37,"component":"browser-library","msg":"Selected entries: 1"}
+{"level":"info","time":"2026-07-30T18:57:59.429Z","seq":38,"component":"browser-library","event_kind":"grpc","action":"selectOption","status":"succeeded"}
+{"level":"info","time":"2026-07-30T18:57:59.433Z","seq":39,"component":"browser-library","event_kind":"grpc","action":"fillText","status":"started"}
+{"level":"info","time":"2026-07-30T18:57:59.433Z","seq":40,"component":"browser-library","msg":"Strict mode is enabled, find Locator with #listprice in page."}
+{"level":"info","time":"2026-07-30T18:57:59.449Z","seq":41,"component":"browser-library","event_kind":"grpc","action":"fillText","status":"succeeded"}
+{"level":"info","time":"2026-07-30T18:57:59.455Z","seq":42,"component":"browser-library","event_kind":"grpc","action":"fillText","status":"started"}
+{"level":"info","time":"2026-07-30T18:57:59.455Z","seq":43,"component":"browser-library","msg":"Strict mode is enabled, find Locator with #licenseplatenumber in page."}
+{"level":"info","time":"2026-07-30T18:57:59.472Z","seq":44,"component":"browser-library","event_kind":"grpc","action":"fillText","status":"succeeded"}
+{"level":"info","time":"2026-07-30T18:57:59.478Z","seq":45,"component":"browser-library","event_kind":"grpc","action":"fillText","status":"started"}
+{"level":"info","time":"2026-07-30T18:57:59.478Z","seq":46,"component":"browser-library","msg":"Strict mode is enabled, find Locator with #annualmileage in page."}
+{"level":"info","time":"2026-07-30T18:57:59.494Z","seq":47,"component":"browser-library","event_kind":"grpc","action":"fillText","status":"succeeded"}
+{"level":"info","time":"2026-07-30T18:58:02.503Z","seq":48,"component":"browser-library","event_kind":"grpc","action":"click","status":"started"}
+{"level":"info","time":"2026-07-30T18:58:02.503Z","seq":49,"component":"browser-library","msg":"Strict mode is enabled, find Locator with css=#nextenterinsurantdata in page."}
+{"level":"info","time":"2026-07-30T18:58:02.558Z","seq":50,"component":"browser-library","event_kind":"grpc","action":"click","status":"succeeded"}
+{"level":"info","time":"2026-07-30T18:58:07.576Z","seq":51,"suite_id":"s1-s1-s1-s1-s1-s1-s1","suite_name":"Rf-Dojos.Dojos.Dojo-01-Web-Testing.Submissions.Florianjocham.Tests.Dojo","component":"browser-library","event_kind":"grpc","action":"getBrowserCatalog","status":"started"}
+{"level":"info","time":"2026-07-30T18:58:07.578Z","seq":52,"suite_id":"s1-s1-s1-s1-s1-s1-s1","suite_name":"Rf-Dojos.Dojos.Dojo-01-Web-Testing.Submissions.Florianjocham.Tests.Dojo","component":"browser-library","event_kind":"grpc","action":"getBrowserCatalog","status":"succeeded"}
+{"level":"info","time":"2026-07-30T18:58:07.580Z","seq":53,"suite_id":"s1-s1-s1-s1-s1-s1-s1","suite_name":"Rf-Dojos.Dojos.Dojo-01-Web-Testing.Submissions.Florianjocham.Tests.Dojo","component":"browser-library","event_kind":"grpc","action":"getBrowserCatalog","status":"started"}
+{"level":"info","time":"2026-07-30T18:58:07.580Z","seq":54,"suite_id":"s1-s1-s1-s1-s1-s1-s1","suite_name":"Rf-Dojos.Dojos.Dojo-01-Web-Testing.Submissions.Florianjocham.Tests.Dojo","component":"browser-library","event_kind":"grpc","action":"getBrowserCatalog","status":"succeeded"}
+{"level":"info","time":"2026-07-30T18:58:07.582Z","seq":55,"suite_id":"s1-s1-s1-s1-s1-s1-s1","suite_name":"Rf-Dojos.Dojos.Dojo-01-Web-Testing.Submissions.Florianjocham.Tests.Dojo","component":"browser-library","event_kind":"grpc","action":"getBrowserCatalog","status":"started"}
+{"level":"info","time":"2026-07-30T18:58:07.582Z","seq":56,"suite_id":"s1-s1-s1-s1-s1-s1-s1","suite_name":"Rf-Dojos.Dojos.Dojo-01-Web-Testing.Submissions.Florianjocham.Tests.Dojo","component":"browser-library","event_kind":"grpc","action":"getBrowserCatalog","status":"succeeded"}
+{"level":"info","time":"2026-07-30T18:58:07.587Z","seq":57,"suite_id":"s1-s1-s1-s1-s1-s1-s1","suite_name":"Rf-Dojos.Dojos.Dojo-01-Web-Testing.Submissions.Florianjocham.Tests.Dojo","component":"browser-library","event_kind":"grpc","action":"getBrowserCatalog","status":"started"}
+{"level":"info","time":"2026-07-30T18:58:07.587Z","seq":58,"suite_id":"s1-s1-s1-s1-s1-s1-s1","suite_name":"Rf-Dojos.Dojos.Dojo-01-Web-Testing.Submissions.Florianjocham.Tests.Dojo","component":"browser-library","event_kind":"grpc","action":"getBrowserCatalog","status":"succeeded"}
+{"level":"info","time":"2026-07-30T18:58:07.590Z","seq":59,"suite_id":"s1-s1-s1-s1-s1-s1-s1","suite_name":"Rf-Dojos.Dojos.Dojo-01-Web-Testing.Submissions.Florianjocham.Tests.Dojo","component":"browser-library","msg":"Changed active context: context=aaf3e937-e288-477f-a1df-faa39769d653"}
+{"level":"info","time":"2026-07-30T18:58:07.590Z","seq":60,"suite_id":"s1-s1-s1-s1-s1-s1-s1","suite_name":"Rf-Dojos.Dojos.Dojo-01-Web-Testing.Submissions.Florianjocham.Tests.Dojo","component":"browser-library","msg":"Changing current active page: page=a6e185b9-c497-4219-bc58-fdf958eb6282"}
+{"level":"info","time":"2026-07-30T18:58:07.590Z","seq":61,"suite_id":"s1-s1-s1-s1-s1-s1-s1","suite_name":"Rf-Dojos.Dojos.Dojo-01-Web-Testing.Submissions.Florianjocham.Tests.Dojo","component":"browser-library","msg":"Changed active page"}
+{"level":"info","time":"2026-07-30T18:58:07.594Z","seq":62,"suite_id":"s1-s1-s1-s1-s1-s1-s1","suite_name":"Rf-Dojos.Dojos.Dojo-01-Web-Testing.Submissions.Florianjocham.Tests.Dojo","component":"browser-library","event_kind":"grpc","action":"closeContext","status":"started"}
+{"level":"info","time":"2026-07-30T18:58:07.622Z","seq":63,"suite_id":"s1-s1-s1-s1-s1-s1-s1","suite_name":"Rf-Dojos.Dojos.Dojo-01-Web-Testing.Submissions.Florianjocham.Tests.Dojo","component":"browser-library","msg":"Removed page=f505aec4-f54c-43d3-966c-4d00472137ba from context=aaf3e937-e288-477f-a1df-faa39769d653 page stack"}
+{"level":"info","time":"2026-07-30T18:58:07.630Z","seq":64,"suite_id":"s1-s1-s1-s1-s1-s1-s1","suite_name":"Rf-Dojos.Dojos.Dojo-01-Web-Testing.Submissions.Florianjocham.Tests.Dojo","component":"browser-library","event_kind":"grpc","action":"closeContext","status":"succeeded"}
+{"level":"info","time":"2026-07-30T18:58:07.712Z","seq":65,"component":"browser-library","event_kind":"grpc","action":"getBrowserCatalog","status":"started"}
+{"level":"info","time":"2026-07-30T18:58:07.713Z","seq":66,"component":"browser-library","event_kind":"grpc","action":"getBrowserCatalog","status":"succeeded"}
