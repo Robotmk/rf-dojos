@@ -416,6 +416,11 @@ async function renderContent() {
       const absoluteByRel = new Map(paths.map((p) => [p.slice(prefixLen), p]));
       const filter = resolveExplorerFilter(state.config.dojo, round);
       const visibleRelPaths = filterExplorerPaths(relPaths, filter);
+      if (!visibleRelPaths.length) {
+        showContentMessage('Keine Dateien nach Explorer-Filter sichtbar für diese Runde.');
+        clearError();
+        return;
+      }
       const activeRelPath = state.activeTabPath && visibleRelPaths.includes(state.activeTabPath)
         ? state.activeTabPath
         : visibleRelPaths[0];
