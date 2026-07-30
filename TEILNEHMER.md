@@ -25,7 +25,8 @@ Jeder Teilnehmer arbeitet alleine – aber hat einen Buddy an seiner Seite.
 - Der Buddy sollte nicht länger als 5 Minuten befragt werden
 - (Natürlich dürfen die Fragen in beide Richtungen gehen: auch der erfahrene Buddy darf den weniger erfahrenen Buddy fragen, wenn er mal nicht weiterkommt.)
 - Die Lösung bleibt immer die _eigene_.
-- Wenn das Buddy-Team nicht weiterkommt, ist der Organisator die zweite Rettungsleine.
+- Buddies sollten in Reichweite zu einandersitzen, aber nicht direkt nebeneinander.
+- Wenn das Buddy-Team auch zusammen nicht weiterkommt, ist der Organisator die zweite Rettungsleine.
 
 **Aufgabe:** 
 
