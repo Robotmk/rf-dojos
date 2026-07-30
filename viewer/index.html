@@ -134,20 +134,23 @@ function ensureEditorInstance() {
   return monacoEditor;
 }
 
-let searchDecorationIds = [];
+const searchDecorationIdsByModel = new WeakMap(); // model -> decoration id array (per-model, not global)
 
 function applySearchDecorations(searchPattern) {
   const editor = ensureEditorInstance();
   const model = editor.getModel();
-  if (!searchPattern || !model) {
-    searchDecorationIds = editor.deltaDecorations(searchDecorationIds, []);
+  if (!model) return;
+  const previousIds = searchDecorationIdsByModel.get(model) || [];
+  if (!searchPattern) {
+    searchDecorationIdsByModel.set(model, model.deltaDecorations(previousIds, []));
     return;
   }
   const matches = model.findMatches(searchPattern, false, true, false, null, false);
-  searchDecorationIds = editor.deltaDecorations(searchDecorationIds, matches.map((m) => ({
+  const newIds = model.deltaDecorations(previousIds, matches.map((m) => ({
     range: m.range,
     options: { inlineClassName: 'search-hit' },
   })));
+  searchDecorationIdsByModel.set(model, newIds);
   if (matches.length) editor.revealRangeInCenter(matches[0].range);
 }
 
