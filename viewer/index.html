@@ -576,7 +576,14 @@ function globToRegex(glob) {
 
 function matchesAnyGlob(relPath, globs) {
   if (!globs || !globs.length) return false;
-  return globs.some((glob) => globToRegex(glob).test(relPath));
+  // A pattern without a "/" (e.g. "conda.yaml") means "this filename,
+  // anywhere in the tree" - match against just the basename, so it's found
+  // recursively in subdirectories, not only at the submission root. A
+  // pattern with a "/" (e.g. "env/conda.yaml") is a path relative to the
+  // submission root and means "only this exact file" - match against the
+  // full relative path as before.
+  const basename = relPath.split('/').pop();
+  return globs.some((glob) => globToRegex(glob).test(glob.includes('/') ? relPath : basename));
 }
 
 function resolveExplorerFilter(dojoConfig, round) {
