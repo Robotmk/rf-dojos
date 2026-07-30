@@ -58,28 +58,29 @@ Jeder Teilnehmer arbeitet alleine – aber hat einen Buddy an seiner Seite.
 
 **Aufgabe:** (lass Dir ggf. von Deinem Buddy helfen)
 
-Hinweis: `<dojo-id>` ist der Ordnername des jeweiligen Dojos, z. B. `dojo-01-web-testing` - siehe die Dojo-Liste unter [Mitmachen](README.md#mitmachen) auf der Startseite.
+Hinweis: `<dojo-id>` ist der Ordnername des jeweiligen Dojos, z. B. `dojo-01-web-testing` - siehe die Dojo-Liste unter [Mitmachen](README.md#mitmachen) auf der Startseite. `<dein-github-username>` ist entsprechend Dein Github-Username, z. B. `simonmeggle`. Beides sind Platzhalter, die Du ohne die spitzen Klammern einsetzt.
 
 1. Stelle sicher, dass Du die Voraussetzungen erfüllst (s.o.)
 2. Forke das [Repo](https://github.com/Robotmk/rf-dojos) in Deinen Github-Account
 3. Klone Deinen Fork auf Dein Filesystem: `git clone ssh://github.com/<dein-github-username>/rf-dojos.git`
-4. Lege einen lokalen Branch mit Deinem Github-Namen an: `git checkout -b <dojo-id>/[dein-github-username]`
+4. Lege einen lokalen Branch mit Deinem Github-Namen an: `git checkout -b <dojo-id>/<dein-github-username>`, z. B. `git checkout -b dojo-01-web-testing/simonmeggle`
 5. Kopiere das Arbeits-Template:
-   `cp -r dojos/<dojo-id>/submissions/_template dojos/<dojo-id>/submissions/[dein-github-username]`
+   `cp -r dojos/<dojo-id>/submissions/_template dojos/<dojo-id>/submissions/<dein-github-username>`, z. B. `cp -r dojos/dojo-01-web-testing/submissions/_template dojos/dojo-01-web-testing/submissions/simonmeggle`
 
 ### Phase 1: Keiko (Implementierung)
 
-Dein Arbeitsverzeichnis: `dojos/<dojo-id>/submissions/[dein-github-username]/`
+Dein Arbeitsverzeichnis: `dojos/<dojo-id>/submissions/<dein-github-username>/`
 
 1. Lies die Aufgabe in `dojos/<dojo-id>/README.md`
-2. Test implementieren in `submissions/[dein-github-username]/`
+2. Test implementieren in `submissions/<dein-github-username>/`
 3. Committen und pushen: 
    1. `git add .`
    2. `git commit -m "meine Lösung"`
-   3. `git push origin <dojo-id>/[dein-github-username]`
+   3. `git push origin <dojo-id>/<dein-github-username>`, z. B. `git push origin dojo-01-web-testing/simonmeggle`
 4. Pull Request öffnen gegen `main` des Original-Repos
-   - PR-Titel: `[<dojo-id>] [dein-github-username]`
-   - Kein weiterer Text nötig
+   - PR-Titel: **nur** die Dojo-ID steht in eckigen Klammern, danach ein Leerzeichen und Dein Github-Username **ohne** Klammern: `[<dojo-id>] <dein-github-username>`, z. B. `[dojo-01-web-testing] simonmeggle`
+     - ⚠️ Der PR-Titel ist das einzige Kriterium, nach dem der Viewer die PRs filtert – bitte genau so eintragen (Username **nicht** in Klammern setzen, sonst findet der Viewer Deinen Submissions-Ordner nicht)!
+   - Kein weiterer Text im PR nötig
 
 ### Phase 2: Hyōka (Vergleich & Diskussion)
 
