@@ -82,14 +82,39 @@ dojo:
   title: "Web Testing Dojo #1"
   date: "2026-07-30"
   target_app: "https://www.saucedemo.com"
+  explorer_blacklist: ["*.png", "*.pyc", "*__pycache__/*", "output.xml"]
 
 rounds:                          # Hyōka-Viewer: Themen-Runden
   - id: structure
     title: "Verzeichnisstruktur"
     description: "Wie ist das Projekt aufgebaut?"
     show: tree                   # tree | file
+  - id: locators
+    title: "Locator-Strategie"
+    description: "Wie werden Elemente gefunden?"
+    show: file
+    default_open: ["tests/*.robot"]     # welche Datei(en) beim Öffnen der Runde aktiv sind
+    explorer:
+      blacklist: ["*.md"]               # rundenspezifisch, zusätzlich zum dojo-weiten explorer_blacklist
+      whitelist: ["tests/*", "resources/*"]  # falls gesetzt: NUR diese Dateien werden überhaupt angezeigt
+    search: "locator|css|xpath|id="     # markiert Dateien mit Treffern im Explorer (🔶)
   # ... weitere Runden, siehe bestehende config.yaml als Vorlage
 ```
+
+**Wichtige Semantik der neuen Felder** (Task 1-8 dieses Plans):
+- `explorer_blacklist` (Dojo-Ebene) und `explorer.blacklist` (Runden-Ebene) werden
+  **vereinigt** (union), nie ersetzt – eine Runde kann also nur zusätzliche
+  Muster hinzufügen, nicht dojo-weite Muster wieder freischalten.
+- Glob-Muster werden relativ zum Wurzelverzeichnis der jeweiligen Einreichung
+  (`dojos/<dojo-id>/submissions/<teilnehmer>/`) abgeglichen. `*` matcht dabei
+  auch über `/` hinweg (es gibt kein separates `**`) – z. B. matcht
+  `*__pycache__/*` sowohl `__pycache__/x.pyc` als auch
+  `resources/__pycache__/x.pyc`.
+- `default_open` wird gegen **alle** Dateien geprüft (ungefiltert) – auch
+  gegen vom Explorer-Filter eigentlich ausgeblendete Dateien. Das ist so
+  gewollt (z. B. um bewusst eine geblacklistete Datei vorzuöffnen).
+- `search`-Badges (🔶 im Explorer) werden dagegen nur für die nach
+  Blacklist/Whitelist **sichtbaren** (gefilterten) Dateien berechnet.
 
 Für ein **neues Dojo**:
 1. `dojos/dojo-02-<thema>/` anlegen, `config.yaml` + `README.md` +
@@ -102,14 +127,19 @@ Für ein **neues Dojo**:
 
 ---
 
-## 5. Kurz-Checkliste am Abend selbst
+## 5. Kurz-Checkliste
 
-- [ ] Beamer/Screen-Share für den Hyōka-Viewer funktioniert
-- [ ] Buddy-Paare sind final festgelegt (nicht öffentlich sichtbar machen,
-      nur für dich als Organizer relevant)
-- [ ] Regelwerk (siehe `TEILNEHMER.md`) ausgedruckt oder auf Screen bereit
+### Vor dem Abend
+
 - [ ] Viewer einmal vor dem Abend im Zielbrowser öffnen (mit echtem
       `?dojo=`-Parameter), damit die vendorten Monaco-Editor-Assets
       (~mehrere MB, `viewer/vendor/monaco/`) bereits im Browser-Cache liegen.
       Verhindert, dass der erste Request am Abend selbst vom Venue-WLAN
       abhängt.
+- [ ] Buddy-Paare sind final festgelegt (nicht öffentlich sichtbar machen,
+      nur für dich als Organizer relevant)
+
+### Am Abend selbst
+
+- [ ] Beamer/Screen-Share für den Hyōka-Viewer funktioniert
+- [ ] Regelwerk (siehe `TEILNEHMER.md`) ausgedruckt oder auf Screen bereit
