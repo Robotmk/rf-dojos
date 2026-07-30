@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generator="Robot 7.4.2 (Python 3.14.6 on win32)" generated="2026-07-30T21:11:30.685767" rpa="false" schemaversion="5">
+<suite id="s1" name="App Tests" source="C:\RF_DEV\rf-dojos\dojos\dojo-01-web-testing\Tests\app_tests.robot">
+<test id="s1-t1" name="Offer_Calculator" line="7">
+<kw name="Open App" owner="app_res">
+<kw name="New Browser" owner="Browser">
+<msg time="2026-07-30T21:11:30.961458" level="INFO">{"browser": "chromium", "headless": false, "chromiumSandbox": false, "devtools": false, "handleSIGHUP": true, "handleSIGINT": true, "handleSIGTERM": true, "slowMo": 0.0, "timeout": 30000.0, "tracesDir": "C:\\RF_DEV\\rf-dojos\\dojos\\dojo-01-web-testing\\Results\\browser\\traces\\temp\\14aea88c-a658-43f0-9b09-db22f149b34a"}</msg>
+<msg time="2026-07-30T21:11:30.986851" level="INFO">Starting Browser process C:\RF_DEV\rf-dojos\.venv\Lib\site-packages\Browser\wrapper\index.js using at 127.0.0.1:52551</msg>
+<msg time="2026-07-30T21:11:32.264475" level="INFO">Successfully created browser with options: {"browser":"chromium","headless":false,"chromiumSandbox":false,"devtools":false,"handleSIGHUP":true,"handleSIGINT":true,"handleSIGTERM":true,"slowMo":0,"timeout":30000,"tracesDir":"C:\\RF_DEV\\rf-dojos\\dojos\\dojo-01-web-testing\\Results\\browser\\traces\\temp\\14aea88c-a658-43f0-9b09-db22f149b34a"}</msg>
+<arg>${BROWSER}</arg>
+<arg>headless=false</arg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Create a new playwright Browser with specified options.</doc>
+<status status="PASS" start="2026-07-30T21:11:30.960707" elapsed="1.304051"/>
+</kw>
+<kw name="New Context" owner="Browser">
+<msg time="2026-07-30T21:11:32.272418" level="INFO">{
+  "acceptDownloads": true,
+  "bypassCSP": false,
+  "forcedColors": "none",
+  "ignoreHTTPSErrors": false,
+  "javaScriptEnabled": true,
+  "offline": false,
+  "reducedMotion": "no-preference",
+  "serviceWorkers": "allow",
+  "viewport": {
+    "height": 1080,
+    "width": 1920
+  }
+}</msg>
+<msg time="2026-07-30T21:11:32.291763" level="INFO">Successfully created context. </msg>
+<msg time="2026-07-30T21:11:32.292066" level="INFO">{'acceptDownloads': True, 'bypassCSP': False, 'forcedColors': 'none', 'ignoreHTTPSErrors': False, 'javaScriptEnabled': True, 'offline': False, 'reducedMotion': 'no-preference', 'serviceWorkers': 'allow', 'viewport': {'height': 1080, 'width': 1920}}</msg>
+<arg>viewport={'width': 1920, 'height': 1080}</arg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Create a new BrowserContext with specified options.</doc>
+<status status="PASS" start="2026-07-30T21:11:32.265927" elapsed="0.026488"/>
+</kw>
+<kw name="New Page" owner="Browser">
+<msg time="2026-07-30T21:11:34.560552" level="INFO">Successfully initialized new page object and opened url: https://sampleapp.tricentis.com/101</msg>
+<arg>${URL_BASE}</arg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Open a new Page.</doc>
+<status status="PASS" start="2026-07-30T21:11:32.292843" elapsed="2.267960"/>
+</kw>
+<kw name="Get Title" owner="Browser">
+<msg time="2026-07-30T21:11:34.574895" level="INFO">Title: 'Tricentis Vehicle Insurance'</msg>
+<arg>==</arg>
+<arg>Tricentis Vehicle Insurance</arg>
+<tag>Assertion</tag>
+<tag>Getter</tag>
+<tag>PageContent</tag>
+<doc>Returns the title of the current page.</doc>
+<status status="PASS" start="2026-07-30T21:11:34.561031" elapsed="0.013982"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2026-07-30T21:11:34.575643" level="INFO">You entered the app successfully!</msg>
+<arg>You entered the app successfully!</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2026-07-30T21:11:34.575198" elapsed="0.000502"/>
+</kw>
+<status status="PASS" start="2026-07-30T21:11:30.959995" elapsed="3.615799"/>
+</kw>
+<kw name="Enter Calculator UI" owner="app_res">
+<kw name="Click" owner="Browser">
+<msg time="2026-07-30T21:11:34.577066" level="INFO">Clicks the element 'xpath=//div[@class='main-navigation']//a[@id='nav_automobile']'.</msg>
+<arg>xpath=//div[@class='main-navigation']//a[@id='nav_automobile']</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Simulates mouse click on the element found by ``selector``.</doc>
+<status status="PASS" start="2026-07-30T21:11:34.576451" elapsed="0.222416"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2026-07-30T21:11:39.800316" level="INFO">Slept 5 seconds.</msg>
+<arg>5s</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2026-07-30T21:11:34.799113" elapsed="5.001300"/>
+</kw>
+<status status="PASS" start="2026-07-30T21:11:34.576092" elapsed="5.224427"/>
+</kw>
+<kw name="Enter Vehicle Data" owner="app_res">
+<kw name="Select Options By" owner="Browser">
+<msg time="2026-07-30T21:11:39.801835" level="INFO">Selects the option(s) Audi by attribute SelectAttribute.value from element id=make.</msg>
+<arg>id=make</arg>
+<arg>value</arg>
+<arg>Audi</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Selects options from select element found by ``selector``.</doc>
+<status status="PASS" start="2026-07-30T21:11:39.801332" elapsed="0.050916"/>
+</kw>
+<kw name="Fill Text" owner="Browser">
+<msg time="2026-07-30T21:11:39.852958" level="INFO">Fills the text '88' in the given field.</msg>
+<arg>id=engineperformance</arg>
+<arg>88</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Clears and fills the given ``txt`` into the text field found by ``selector``.</doc>
+<status status="PASS" start="2026-07-30T21:11:39.852441" elapsed="0.012938"/>
+</kw>
+<kw name="Fill Text" owner="Browser">
+<msg time="2026-07-30T21:11:39.866702" level="INFO">Fills the text '07/09/2024' in the given field.</msg>
+<arg>id=dateofmanufacture</arg>
+<arg>07/09/2024</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Clears and fills the given ``txt`` into the text field found by ``selector``.</doc>
+<status status="PASS" start="2026-07-30T21:11:39.865701" elapsed="0.020173"/>
+</kw>
+<kw name="Select Options By" owner="Browser">
+<msg time="2026-07-30T21:11:39.887444" level="INFO">Selects the option(s) 5 by attribute SelectAttribute.value from element id=numberofseats.</msg>
+<arg>id=numberofseats</arg>
+<arg>value</arg>
+<arg>5</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Selects options from select element found by ``selector``.</doc>
+<status status="PASS" start="2026-07-30T21:11:39.886199" elapsed="0.023574"/>
+</kw>
+<kw name="Select Options By" owner="Browser">
+<msg time="2026-07-30T21:11:39.911177" level="INFO">Selects the option(s) Diesel by attribute SelectAttribute.value from element id=fuel.</msg>
+<arg>id=fuel</arg>
+<arg>value</arg>
+<arg>Diesel</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Selects options from select element found by ``selector``.</doc>
+<status status="PASS" start="2026-07-30T21:11:39.910104" elapsed="0.020182"/>
+</kw>
+<kw name="Fill Text" owner="Browser">
+<msg time="2026-07-30T21:11:39.931265" level="INFO">Fills the text '30000' in the given field.</msg>
+<arg>id=listprice</arg>
+<arg>30000</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Clears and fills the given ``txt`` into the text field found by ``selector``.</doc>
+<status status="PASS" start="2026-07-30T21:11:39.930526" elapsed="0.012701"/>
+</kw>
+<kw name="Fill Text" owner="Browser">
+<msg time="2026-07-30T21:11:39.944743" level="INFO">Fills the text 'XSMUN897' in the given field.</msg>
+<arg>id=licenseplatenumber</arg>
+<arg>XSMUN897</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Clears and fills the given ``txt`` into the text field found by ``selector``.</doc>
+<status status="PASS" start="2026-07-30T21:11:39.943651" elapsed="0.016152"/>
+</kw>
+<kw name="Fill Text" owner="Browser">
+<msg time="2026-07-30T21:11:39.960834" level="INFO">Fills the text '15000' in the given field.</msg>
+<arg>id=annualmileage</arg>
+<arg>15000</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Clears and fills the given ``txt`` into the text field found by ``selector``.</doc>
+<status status="PASS" start="2026-07-30T21:11:39.960052" elapsed="0.016150"/>
+</kw>
+<kw name="Click" owner="Browser">
+<msg time="2026-07-30T21:11:39.977559" level="INFO">Clicks the element 'id=nextenterinsurantdata'.</msg>
+<arg>id=nextenterinsurantdata</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Simulates mouse click on the element found by ``selector``.</doc>
+<status status="PASS" start="2026-07-30T21:11:39.976501" elapsed="0.087031"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2026-07-30T21:11:45.064411" level="INFO">Slept 5 seconds.</msg>
+<arg>5s</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2026-07-30T21:11:40.063727" elapsed="5.000795"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2026-07-30T21:11:45.065102" level="INFO">Vehicle Data entered</msg>
+<arg>Vehicle Data entered</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2026-07-30T21:11:45.064692" elapsed="0.000462"/>
+</kw>
+<arg>Make=Audi</arg>
+<arg>kw=88</arg>
+<arg>year=2024</arg>
+<arg>seats=5</arg>
+<arg>fuel=Diesel</arg>
+<arg>price=30000</arg>
+<arg>mileage=15000</arg>
+<status status="PASS" start="2026-07-30T21:11:39.800820" elapsed="5.264414"/>
+</kw>
+<msg time="2026-07-30T21:11:45.074173" level="INFO">Switching context to context=af508cc6-995f-4149-9a10-8510aba7ff9c in CURRENT</msg>
+<msg time="2026-07-30T21:11:45.079247" level="INFO">Successfully changed active context: context=af508cc6-995f-4149-9a10-8510aba7ff9c</msg>
+<msg time="2026-07-30T21:11:45.105457" level="INFO">Successfully closed Context</msg>
+<status status="PASS" start="2026-07-30T21:11:30.959344" elapsed="14.106168"/>
+</test>
+<status status="PASS" start="2026-07-30T21:11:30.687374" elapsed="14.419091"/>
+</suite>
+<statistics>
+<total>
+<stat pass="1" fail="0" skip="0">All Tests</stat>
+</total>
+<tag>
+</tag>
+<suite>
+<stat name="App Tests" id="s1" pass="1" fail="0" skip="0">App Tests</stat>
+</suite>
+</statistics>
+<errors>
+</errors>
+</robot>
