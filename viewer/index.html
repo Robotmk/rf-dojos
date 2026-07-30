@@ -186,12 +186,14 @@ const state = {
   currentParticipantIndex: 0,
   activeTabPath: null,
   openTabs: [],
+  needsDefaultOpen: true,
 };
 
 function selectParticipant(index) {
   state.currentParticipantIndex = index;
   state.openTabs = [];
   state.activeTabPath = null;
+  state.needsDefaultOpen = true;
   render();
 }
 
@@ -199,6 +201,7 @@ function selectRound(index) {
   state.currentRoundIndex = index;
   state.openTabs = [];
   state.activeTabPath = null;
+  state.needsDefaultOpen = true;
   render();
 }
 
@@ -478,10 +481,11 @@ async function renderContent() {
         clearError();
         return;
       }
-      if (!state.openTabs.length) {
+      if (state.needsDefaultOpen) {
         const defaultPaths = resolveDefaultOpenPaths(relPaths, round);
         defaultPaths.forEach((relPath) => openTab(relPath));
         if (!state.openTabs.length && visibleRelPaths.length) openTab(visibleRelPaths[0]);
+        state.needsDefaultOpen = false;
       }
       renderTabBar();
 
@@ -493,6 +497,8 @@ async function renderContent() {
 
       if (state.activeTabPath) {
         await openFileInEditor(state.activeTabPath, absoluteByRel.get(state.activeTabPath), pr.branch);
+      } else {
+        ensureEditorInstance().setModel(null);
       }
     }
     if (seq !== renderSeq) return;
