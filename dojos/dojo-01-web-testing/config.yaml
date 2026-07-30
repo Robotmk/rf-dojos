@@ -3,7 +3,7 @@ dojo:
   title: "Web Testing Dojo #1"
   date: "2026-07-30"
   target_app: "https://sampleapp.tricentis.com/101/"
-  explorer_blacklist: ["*_template*", "*.png", "*.pyc", "__pycache__/*"]
+  explorer_blacklist: ["*.png", "*.jpg", "*.gif", "*.zip", "*.pyc", "*__pycache__/*", "output.xml", "log.html", "report.html", ".git*"]
 
 rounds:
   - id: structure
