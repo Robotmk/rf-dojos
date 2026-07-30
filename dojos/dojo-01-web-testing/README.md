@@ -25,7 +25,10 @@ Bevor Du mit der Implemtierung beginnst, brauchst Du:
 - Robot Framework 
 - Browser Library
 
-Bereite das Environment vor und lege die dafür notwendigen Dateien (zb. conda.yaml oder requirements.txt) in deinem Submission-Ordner ab.
+Bereite das Environment vor und lege die dafür notwendigen Dateien (zb. conda.yaml oder requirements.txt) in deinem Submission-Ordner ab.  
+Lege eine Datei `env.md` an und dokumentiere in Stichpunkten, wie du Robot Framework und die Browser Library installierst.
+
+Hinweis: Wenn Du noch keine Erfahrung mit virtuellen Environments hast, dann lass Dir von Deinem Buddy direkt helfen. 
 
 ### Implementierung 
 
