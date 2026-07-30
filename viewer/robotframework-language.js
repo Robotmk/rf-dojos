@@ -42,4 +42,17 @@ function registerRobotFrameworkLanguage(monaco) {
     ],
     colors: {},
   });
+
+  monaco.editor.defineTheme('rf-dark', {
+    base: 'vs-dark',
+    inherit: true,
+    rules: [
+      { token: 'keyword.section', foreground: '58a6ff', fontStyle: 'bold' },
+      { token: 'keyword.setting', foreground: 'd2a8ff' },
+      { token: 'variable', foreground: '7ee787' },
+      { token: 'comment', foreground: '8b949e', fontStyle: 'italic' },
+      { token: 'entity.name.testcase', foreground: 'ffa657', fontStyle: 'bold' },
+    ],
+    colors: {},
+  });
 }

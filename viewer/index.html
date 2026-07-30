@@ -132,6 +132,9 @@ function setTheme(theme) {
   localStorage.setItem(THEME_KEY, theme);
   document.documentElement.dataset.theme = theme;
   document.getElementById('theme-toggle-btn').textContent = theme === 'dark' ? '☀️' : '🌙';
+  if (typeof monaco !== 'undefined' && monacoEditor) {
+    monaco.editor.setTheme(theme === 'dark' ? 'rf-dark' : 'rf-light');
+  }
 }
 
 function toggleTheme() {
@@ -201,7 +204,7 @@ function ensureEditorInstance() {
   if (monacoEditor) return monacoEditor;
   monacoEditor = monaco.editor.create(document.getElementById('editor-pane'), {
     readOnly: true,
-    theme: 'rf-light',
+    theme: getTheme() === 'dark' ? 'rf-dark' : 'rf-light',
     automaticLayout: true,
     minimap: { enabled: false },
   });
