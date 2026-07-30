@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generator="Robot 7.4.2 (Python 3.13.12 on win32)" generated="2026-07-30T21:07:43.135956" rpa="false" schemaversion="5">
+<suite id="s1" name="Rf-Dojos" source="C:\Users\flori\Projekte\rf-dojos">
+<suite id="s1-s1" name="Dojos" source="C:\Users\flori\Projekte\rf-dojos\dojos">
+<suite id="s1-s1-s1" name="Dojo-01-Web-Testing" source="C:\Users\flori\Projekte\rf-dojos\dojos\dojo-01-web-testing">
+<suite id="s1-s1-s1-s1" name="Submissions" source="C:\Users\flori\Projekte\rf-dojos\dojos\dojo-01-web-testing\submissions">
+<suite id="s1-s1-s1-s1-s1" name="Florianjocham" source="C:\Users\flori\Projekte\rf-dojos\dojos\dojo-01-web-testing\submissions\florianjocham">
+<suite id="s1-s1-s1-s1-s1-s1" name="Tests" source="C:\Users\flori\Projekte\rf-dojos\dojos\dojo-01-web-testing\submissions\florianjocham\tests">
+<suite id="s1-s1-s1-s1-s1-s1-s1" name="Dojo" source="C:\Users\flori\Projekte\rf-dojos\dojos\dojo-01-web-testing\submissions\florianjocham\tests\dojo.robot">
+<test id="s1-s1-s1-s1-s1-s1-s1-t1" name="Test" line="11">
+<kw name="Open Browser" owner="Browser">
+<msg time="2026-07-30T21:07:43.575051" level="WARN">Open Browser is for quick experimentation and debugging only. Use New Page for production.</msg>
+<msg time="2026-07-30T21:07:43.585172" level="INFO">{"browser": "chromium", "headless": false, "chromiumSandbox": false, "devtools": false, "handleSIGHUP": true, "handleSIGINT": true, "handleSIGTERM": true, "slowMo": 0.0, "timeout": 30000.0, "tracesDir": "C:\\Users\\flori\\Projekte\\rf-dojos\\results\\browser\\traces\\temp\\359085e9-5da7-48cd-b0cd-02450d00642f"}</msg>
+<msg time="2026-07-30T21:07:43.661866" level="INFO">Starting Browser process C:\Users\flori\Projekte\rf-dojos\.venv\Lib\site-packages\Browser\wrapper\index.js using at 127.0.0.1:57251</msg>
+<msg time="2026-07-30T21:07:44.977011" level="INFO">Successfully created browser with options: {"browser":"chromium","headless":false,"chromiumSandbox":false,"devtools":false,"handleSIGHUP":true,"handleSIGINT":true,"handleSIGTERM":true,"slowMo":0,"timeout":30000,"tracesDir":"C:\\Users\\flori\\Projekte\\rf-dojos\\results\\browser\\traces\\temp\\359085e9-5da7-48cd-b0cd-02450d00642f"}</msg>
+<msg time="2026-07-30T21:07:44.980297" level="INFO">{
+  "acceptDownloads": true,
+  "bypassCSP": true,
+  "forcedColors": "none",
+  "ignoreHTTPSErrors": false,
+  "javaScriptEnabled": true,
+  "offline": false,
+  "reducedMotion": "no-preference",
+  "serviceWorkers": "allow",
+  "viewport": {
+    "width": 1280,
+    "height": 720
+  }
+}</msg>
+<msg time="2026-07-30T21:07:45.010260" level="INFO">Successfully created context. </msg>
+<msg time="2026-07-30T21:07:45.010595" level="INFO">{'acceptDownloads': True, 'bypassCSP': True, 'forcedColors': 'none', 'ignoreHTTPSErrors': False, 'javaScriptEnabled': True, 'offline': False, 'reducedMotion': 'no-preference', 'serviceWorkers': 'allow', 'viewport': {'width': 1280, 'height': 720}}</msg>
+<msg time="2026-07-30T21:07:47.370218" level="INFO">Successfully initialized new page object and opened url: https://sampleapp.tricentis.com/101/app.php</msg>
+<arg>${CALCULATOR_URL}</arg>
+<arg>chromium</arg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Opens a new browser instance. Use this keyword for quick experiments or debugging sessions.</doc>
+<status status="PASS" start="2026-07-30T21:07:43.574109" elapsed="3.796910"/>
+</kw>
+<kw name="Befülle Fahrzeugdaten">
+<kw name="Click" owner="Browser">
+<msg time="2026-07-30T21:07:47.375678" level="INFO">Clicks the element 'css=#nav_automobile:visible'.</msg>
+<arg>css=#nav_automobile:visible</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Simulates mouse click on the element found by ``selector``.</doc>
+<status status="PASS" start="2026-07-30T21:07:47.374716" elapsed="0.274207"/>
+</kw>
+<kw name="Select Options By" owner="Browser">
+<msg time="2026-07-30T21:07:47.650166" level="INFO">Selects the option(s) Audi by attribute SelectAttribute.value from element css=#make.</msg>
+<arg>css=#make</arg>
+<arg>value</arg>
+<arg>Audi</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Selects options from select element found by ``selector``.</doc>
+<status status="PASS" start="2026-07-30T21:07:47.649253" elapsed="0.156274"/>
+</kw>
+<kw name="Fill Text" owner="Browser">
+<msg time="2026-07-30T21:07:47.806640" level="INFO">Fills the text '88' in the given field.</msg>
+<arg>selector=#engineperformance</arg>
+<arg>txt=88</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Clears and fills the given ``txt`` into the text field found by ``selector``.</doc>
+<status status="PASS" start="2026-07-30T21:07:47.805821" elapsed="0.018714"/>
+</kw>
+<kw name="Fill Text" owner="Browser">
+<msg time="2026-07-30T21:07:47.826546" level="INFO">Fills the text '2004' in the given field.</msg>
+<arg>selector=#dateofmanufacture</arg>
+<arg>txt=2004</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Clears and fills the given ``txt`` into the text field found by ``selector``.</doc>
+<status status="PASS" start="2026-07-30T21:07:47.825044" elapsed="0.021214"/>
+</kw>
+<kw name="Select Options By" owner="Browser">
+<msg time="2026-07-30T21:07:47.847228" level="INFO">Selects the option(s) 5 by attribute SelectAttribute.value from element css=#numberofseats.</msg>
+<arg>css=#numberofseats</arg>
+<arg>value</arg>
+<arg>5</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Selects options from select element found by ``selector``.</doc>
+<status status="PASS" start="2026-07-30T21:07:47.846554" elapsed="0.024656"/>
+</kw>
+<kw name="Select Options By" owner="Browser">
+<msg time="2026-07-30T21:07:47.873012" level="INFO">Selects the option(s) Diesel by attribute SelectAttribute.value from element css=#fuel.</msg>
+<arg>css=#fuel</arg>
+<arg>value</arg>
+<arg>Diesel</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Selects options from select element found by ``selector``.</doc>
+<status status="PASS" start="2026-07-30T21:07:47.871716" elapsed="0.022001"/>
+</kw>
+<kw name="Fill Text" owner="Browser">
+<msg time="2026-07-30T21:07:47.894585" level="INFO">Fills the text '30.000' in the given field.</msg>
+<arg>selector=#listprice</arg>
+<arg>txt=30.000</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Clears and fills the given ``txt`` into the text field found by ``selector``.</doc>
+<status status="PASS" start="2026-07-30T21:07:47.893971" elapsed="0.017928"/>
+</kw>
+<kw name="Fill Text" owner="Browser">
+<msg time="2026-07-30T21:07:47.912787" level="INFO">Fills the text 'ABC-123' in the given field.</msg>
+<arg>selector=#licenseplatenumber</arg>
+<arg>txt=ABC-123</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Clears and fills the given ``txt`` into the text field found by ``selector``.</doc>
+<status status="PASS" start="2026-07-30T21:07:47.912164" elapsed="0.017768"/>
+</kw>
+<kw name="Fill Text" owner="Browser">
+<msg time="2026-07-30T21:07:47.930894" level="INFO">Fills the text '15.000' in the given field.</msg>
+<arg>selector=#annualmileage</arg>
+<arg>txt=15.000</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Clears and fills the given ``txt`` into the text field found by ``selector``.</doc>
+<status status="PASS" start="2026-07-30T21:07:47.930224" elapsed="0.017987"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2026-07-30T21:07:50.951706" level="INFO">Slept 3 seconds.</msg>
+<arg>3</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2026-07-30T21:07:47.948497" elapsed="3.004982"/>
+</kw>
+<kw name="Click" owner="Browser">
+<msg time="2026-07-30T21:07:50.954394" level="INFO">Clicks the element 'css=#nextenterinsurantdata'.</msg>
+<arg>css=#nextenterinsurantdata</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Simulates mouse click on the element found by ``selector``.</doc>
+<status status="PASS" start="2026-07-30T21:07:50.953730" elapsed="0.068570"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2026-07-30T21:07:56.023620" level="INFO">Slept 5 seconds.</msg>
+<arg>5</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2026-07-30T21:07:51.022621" elapsed="5.001416"/>
+</kw>
+<doc>x</doc>
+<status status="PASS" start="2026-07-30T21:07:47.373808" elapsed="8.650779"/>
+</kw>
+<msg time="2026-07-30T21:07:56.045009" level="INFO">Switching context to context=fc6397ee-10fd-44f9-8967-2fef37a65605 in CURRENT</msg>
+<msg time="2026-07-30T21:07:56.053874" level="INFO">Successfully changed active context: context=fc6397ee-10fd-44f9-8967-2fef37a65605</msg>
+<msg time="2026-07-30T21:07:56.076576" level="INFO">Successfully closed Context</msg>
+<doc>x</doc>
+<status status="PASS" start="2026-07-30T21:07:43.564324" elapsed="12.461355"/>
+</test>
+<status status="PASS" start="2026-07-30T21:07:43.282386" elapsed="12.822304"/>
+</suite>
+<status status="PASS" start="2026-07-30T21:07:43.276526" elapsed="12.850175"/>
+</suite>
+<status status="PASS" start="2026-07-30T21:07:43.268067" elapsed="12.869417"/>
+</suite>
+<status status="PASS" start="2026-07-30T21:07:43.215251" elapsed="12.930077"/>
+</suite>
+<status status="PASS" start="2026-07-30T21:07:43.207236" elapsed="12.952516"/>
+</suite>
+<status status="PASS" start="2026-07-30T21:07:43.201053" elapsed="12.964833"/>
+</suite>
+<status status="PASS" start="2026-07-30T21:07:43.143585" elapsed="13.031829"/>
+</suite>
+<statistics>
+<total>
+<stat pass="1" fail="0" skip="0">All Tests</stat>
+</total>
+<tag>
+</tag>
+<suite>
+<stat name="Rf-Dojos" id="s1" pass="1" fail="0" skip="0">Rf-Dojos</stat>
+<stat name="Dojos" id="s1-s1" pass="1" fail="0" skip="0">Rf-Dojos.Dojos</stat>
+<stat name="Dojo-01-Web-Testing" id="s1-s1-s1" pass="1" fail="0" skip="0">Rf-Dojos.Dojos.Dojo-01-Web-Testing</stat>
+<stat name="Submissions" id="s1-s1-s1-s1" pass="1" fail="0" skip="0">Rf-Dojos.Dojos.Dojo-01-Web-Testing.Submissions</stat>
+<stat name="Florianjocham" id="s1-s1-s1-s1-s1" pass="1" fail="0" skip="0">Rf-Dojos.Dojos.Dojo-01-Web-Testing.Submissions.Florianjocham</stat>
+<stat name="Tests" id="s1-s1-s1-s1-s1-s1" pass="1" fail="0" skip="0">Rf-Dojos.Dojos.Dojo-01-Web-Testing.Submissions.Florianjocham.Tests</stat>
+<stat name="Dojo" id="s1-s1-s1-s1-s1-s1-s1" pass="1" fail="0" skip="0">Rf-Dojos.Dojos.Dojo-01-Web-Testing.Submissions.Florianjocham.Tests.Dojo</stat>
+</suite>
+</statistics>
+<errors>
+<msg time="2026-07-30T21:07:43.575051" level="WARN">Open Browser is for quick experimentation and debugging only. Use New Page for production.</msg>
+</errors>
+</robot>

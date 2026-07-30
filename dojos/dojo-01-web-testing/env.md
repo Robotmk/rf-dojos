@@ -1,0 +1,5 @@
+- uv venv (--bare)
+- uv init
+- uv add robotframework
+- uv add robotframework-browser
+- uv add robotframework-robocop
