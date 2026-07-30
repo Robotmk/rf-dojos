@@ -1,0 +1,39 @@
+name: Validate PR title
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+jobs:
+  validate-title:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check PR title matches "[<dojo-id>] <github-username>"
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          BRANCH: ${{ github.head_ref }}
+        run: |
+          dojo_ids=$(ls dojos)
+          matched_id=""
+          for id in $dojo_ids; do
+            if [[ "$PR_TITLE" =~ ^\[$id\][[:space:]]+[^[:space:]].*$ ]]; then
+              matched_id="$id"
+              break
+            fi
+          done
+
+          if [ -z "$matched_id" ]; then
+            echo "::error::PR title '$PR_TITLE' does not match the required format '[<dojo-id>] <github-username>'."
+            echo "Valid dojo IDs: $dojo_ids"
+            echo "See TEILNEHMER.md, step 4, for the exact format. This is the only thing the viewer uses to find your submission."
+            exit 1
+          fi
+
+          echo "PR title OK, matched dojo: $matched_id"
+
+          expected_prefix="$matched_id/"
+          if [[ "$BRANCH" != "$expected_prefix"* ]]; then
+            echo "::warning::Branch '$BRANCH' doesn't follow the recommended convention '$expected_prefix<github-username>'. This won't break the viewer (it only reads the PR title), but keeping it consistent makes submissions easier to find in git."
+          fi
