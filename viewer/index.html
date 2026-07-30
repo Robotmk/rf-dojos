@@ -14,9 +14,18 @@
 <script src="vendor/monaco/min/vs/loader.js"></script>
 <script src="robotframework-language.js"></script>
 <style>
-  :root { --border: #d0d7de; --bg-nav: #f6f8fa; --accent: #0969da; }
+  :root {
+    --border: #d0d7de; --bg-nav: #f6f8fa; --accent: #0969da;
+    --bg-page: #ffffff; --text: #1f2328; --search-hit-bg: #fff8c5;
+    --error-bg: #ffebe9; --error-text: #82071e; --error-border: #ffc1c1;
+  }
+  :root[data-theme="dark"] {
+    --border: #30363d; --bg-nav: #161b22; --accent: #58a6ff;
+    --bg-page: #0d1117; --text: #c9d1d9; --search-hit-bg: #4d3800;
+    --error-bg: #3d1a1a; --error-text: #ffb3ab; --error-border: #6e2c2c;
+  }
   * { box-sizing: border-box; }
-  body { margin: 0; font-family: -apple-system, Segoe UI, sans-serif; color: #1f2328; }
+  body { margin: 0; font-family: -apple-system, Segoe UI, sans-serif; background: var(--bg-page); color: var(--text); }
   header { display: flex; align-items: center; gap: 1rem; padding: 1rem; border-bottom: 1px solid var(--border); }
   header img.logo { height: 72px; }
   header h1 { font-size: 1.1rem; margin: 0; }
@@ -30,13 +39,14 @@
   #rounds-nav li.active .round-description { color: #d0d7de; }
   #main { display: flex; flex-direction: column; overflow: hidden; }
   #participant-tabs { display: flex; gap: 0.25rem; padding: 0.5rem 1rem; border-bottom: 1px solid var(--border); overflow-x: auto; }
-  #participant-tabs button { border: 1px solid var(--border); background: white; border-radius: 6px; padding: 0.35rem 0.75rem; cursor: pointer; }
+  #participant-tabs button { border: 1px solid var(--border); background: var(--bg-page); border-radius: 6px; padding: 0.35rem 0.75rem; cursor: pointer; color: var(--text); }
   #participant-tabs button.active { background: var(--accent); color: white; border-color: var(--accent); }
   #content { flex: 1; overflow: auto; padding: 1rem; }
   #status-bar { padding: 0.25rem 1rem; font-size: 0.85rem; color: #57606a; border-top: 1px solid var(--border); }
-  dialog#token-dialog { border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; }
+  dialog#token-dialog { border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; background: var(--bg-page); color: var(--text); }
   dialog#token-dialog input { width: 320px; padding: 0.4rem; }
-  .search-hit { background: #fff8c5; }
+  #error-banner { background: var(--error-bg); color: var(--error-text); padding: 0.5rem 1rem; border-bottom: 1px solid var(--error-border); }
+  .search-hit { background: var(--search-hit-bg); }
   #dojo-select { margin-left: auto; padding: 0.3rem 0.5rem; }
   #file-view { display: flex; height: 100%; }
   #explorer { width: 220px; border-right: 1px solid var(--border); overflow-y: auto; padding: 0.5rem; flex-shrink: 0; }
@@ -47,12 +57,15 @@
   #explorer li.file.active { font-weight: 600; color: var(--accent); }
   #file-view-main { display: flex; flex-direction: column; flex: 1; min-width: 0; }
   #tab-bar { display: flex; gap: 0.25rem; padding: 0.25rem 0.5rem; border-bottom: 1px solid var(--border); overflow-x: auto; flex-shrink: 0; }
-  #tab-bar .tab { display: flex; align-items: center; gap: 0.35rem; border: 1px solid var(--border); border-radius: 6px; padding: 0.2rem 0.5rem; background: white; cursor: pointer; font-size: 0.85rem; }
+  #tab-bar .tab { display: flex; align-items: center; gap: 0.35rem; border: 1px solid var(--border); border-radius: 6px; padding: 0.2rem 0.5rem; background: var(--bg-page); cursor: pointer; font-size: 0.85rem; color: var(--text); }
   #tab-bar .tab.active { background: var(--accent); color: white; border-color: var(--accent); }
   #tab-bar .tab .close { opacity: 0.7; }
   #tab-bar .tab .close:hover { opacity: 1; }
   #editor-pane { flex: 1; min-width: 0; }
 </style>
+<script>
+  document.documentElement.dataset.theme = localStorage.getItem('rf_dojos_theme') || 'light';
+</script>
 </head>
 <body>
 <header>
@@ -62,10 +75,11 @@
   <select id="dojo-select">
     <option value="">Dojo wählen…</option>
   </select>
+  <button id="theme-toggle-btn" type="button" title="Theme wechseln">🌙</button>
   <a href="../">Zur Startseite</a>
   <button id="change-token-btn" type="button">Token ändern</button>
 </header>
-<div id="error-banner" style="display:none; background:#ffebe9; color:#82071e; padding:0.5rem 1rem; border-bottom:1px solid #ffc1c1;"></div>
+<div id="error-banner" style="display:none;"></div>
 <div id="layout">
   <nav id="rounds-nav"><ul id="rounds-list"></ul></nav>
   <div id="main">
@@ -106,6 +120,22 @@ function getToken() {
 
 function setToken(value) {
   localStorage.setItem(TOKEN_KEY, value);
+}
+
+const THEME_KEY = 'rf_dojos_theme';
+
+function getTheme() {
+  return localStorage.getItem(THEME_KEY) || 'light';
+}
+
+function setTheme(theme) {
+  localStorage.setItem(THEME_KEY, theme);
+  document.documentElement.dataset.theme = theme;
+  document.getElementById('theme-toggle-btn').textContent = theme === 'dark' ? '☀️' : '🌙';
+}
+
+function toggleTheme() {
+  setTheme(getTheme() === 'dark' ? 'light' : 'dark');
 }
 
 function decodeBase64Utf8(b64) {
@@ -678,6 +708,8 @@ function handleKeydown(event) {
 
 document.addEventListener('keydown', handleKeydown);
 document.getElementById('change-token-btn').addEventListener('click', changeToken);
+document.getElementById('theme-toggle-btn').addEventListener('click', toggleTheme);
+setTheme(getTheme());
 
 function showError(message) {
   const banner = document.getElementById('error-banner');
