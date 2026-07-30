@@ -1,0 +1,23 @@
+tasks:
+  installRobotDependencies:
+    name: Install Robot dependencies
+    description: Install Robot Framework, Browser Library, and its browser runtime.
+    command: |
+      uv venv --allow-existing --python 3.12 .venv
+      uv pip install --python .venv/bin/python robotframework robotframework-browser
+      if [ ! -d .venv/lib/python3.12/site-packages/Browser/wrapper/node_modules ]; then
+        .venv/bin/rfbrowser init chromium
+      fi
+    triggeredBy:
+      - manual
+      - postDevcontainerStart
+      - prebuild
+
+  testDojo01Webtesting:
+    name: Test dojo 01 web testing
+    description: Run the Robot test in test/dojo-01-webtesting.robot.
+    command: .venv/bin/robot --pythonpath test test/dojo-01-webtesting.robot
+    dependsOn:
+      - installRobotDependencies
+    triggeredBy:
+      - manual

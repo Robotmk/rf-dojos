@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generator="Robot 7.4.2 (Python 3.12.13 on linux)" generated="2026-07-30T18:48:31.825362" rpa="false" schemaversion="5">
+<suite id="s1" name="Rf-Dojos" source="/workspaces/rf-dojos">
+<suite id="s1-s1" name="Test" source="/workspaces/rf-dojos/test">
+<suite id="s1-s1-s1" name="Dojo-01-Webtesting" source="/workspaces/rf-dojos/test/dojo-01-webtesting.robot">
+<kw name="Initialize Browser" type="SETUP">
+<kw name="New Browser" owner="Browser">
+<msg time="2026-07-30T18:48:32.442129" level="INFO">{"browser": "chromium", "headless": true, "args": ["--no-sandbox"], "chromiumSandbox": false, "devtools": false, "handleSIGHUP": true, "handleSIGINT": true, "handleSIGTERM": true, "slowMo": 0.0, "timeout": 30000.0, "tracesDir": "/workspaces/rf-dojos/results/browser/traces/temp/987a0b92-fefc-4a8c-b91a-5837589c8055"}</msg>
+<msg time="2026-07-30T18:48:32.475172" level="INFO">Starting Browser process /workspaces/rf-dojos/.venv/lib/python3.12/site-packages/Browser/wrapper/index.js using at 127.0.0.1:49237</msg>
+<msg time="2026-07-30T18:48:33.213572" level="INFO">Successfully created browser with options: {"browser":"chromium","headless":true,"args":["--no-sandbox"],"chromiumSandbox":false,"devtools":false,"handleSIGHUP":true,"handleSIGINT":true,"handleSIGTERM":true,"slowMo":0,"timeout":30000,"tracesDir":"/workspaces/rf-dojos/results/browser/traces/temp/987a0b92-fefc-4a8c-b91a-5837589c8055"}</msg>
+<arg>headless=True</arg>
+<arg>args=["--no-sandbox"]</arg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Create a new playwright Browser with specified options.</doc>
+<status status="PASS" start="2026-07-30T18:48:32.438906" elapsed="0.775128"/>
+</kw>
+<kw name="New Context" owner="Browser">
+<msg time="2026-07-30T18:48:33.217513" level="INFO">{
+  "acceptDownloads": true,
+  "bypassCSP": false,
+  "forcedColors": "none",
+  "ignoreHTTPSErrors": false,
+  "javaScriptEnabled": true,
+  "offline": false,
+  "reducedMotion": "no-preference",
+  "serviceWorkers": "allow",
+  "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+  "viewport": {
+    "width": 1280,
+    "height": 720
+  }
+}</msg>
+<msg time="2026-07-30T18:48:33.240967" level="INFO">Successfully created context. </msg>
+<msg time="2026-07-30T18:48:33.241175" level="INFO">{'acceptDownloads': True, 'bypassCSP': False, 'forcedColors': 'none', 'ignoreHTTPSErrors': False, 'javaScriptEnabled': True, 'offline': False, 'reducedMotion': 'no-preference', 'serviceWorkers': 'allow', 'userAgent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36', 'viewport': {'width': 1280, 'height': 720}}</msg>
+<arg>userAgent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36</arg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Create a new BrowserContext with specified options.</doc>
+<status status="PASS" start="2026-07-30T18:48:33.214465" elapsed="0.026905"/>
+</kw>
+<kw name="New Page" owner="Browser">
+<msg time="2026-07-30T18:48:35.008758" level="INFO">Successfully initialized new page object and opened url: https://sampleapp.tricentis.com/101/</msg>
+<arg>https://sampleapp.tricentis.com/101/</arg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Open a new Page.</doc>
+<status status="PASS" start="2026-07-30T18:48:33.241685" elapsed="1.767722"/>
+</kw>
+<status status="PASS" start="2026-07-30T18:48:32.435724" elapsed="2.574049"/>
+</kw>
+<test id="s1-s1-s1-t1" name="TestAngebot" line="10">
+<kw name="New Page" owner="Browser">
+<msg time="2026-07-30T18:48:35.658014" level="INFO">Successfully initialized new page object and opened url: https://sampleapp.tricentis.com/101/</msg>
+<arg>https://sampleapp.tricentis.com/101/</arg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Open a new Page.</doc>
+<status status="PASS" start="2026-07-30T18:48:35.248912" elapsed="0.409593"/>
+</kw>
+<msg time="2026-07-30T18:48:35.763757" level="INFO">Closing current active page.</msg>
+<msg time="2026-07-30T18:48:35.779312" level="INFO">Successfully closed Page with runBeforeUnload false</msg>
+<status status="PASS" start="2026-07-30T18:48:35.009946" elapsed="0.649011"/>
+</test>
+<kw name="Close Browser" owner="Browser" type="TEARDOWN">
+<msg time="2026-07-30T18:48:35.837165" level="INFO">Closed browser</msg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Closes the current browser.</doc>
+<status status="PASS" start="2026-07-30T18:48:35.781965" elapsed="0.056890"/>
+</kw>
+<status status="PASS" start="2026-07-30T18:48:32.131152" elapsed="3.707944"/>
+</suite>
+<status status="PASS" start="2026-07-30T18:48:32.068420" elapsed="3.836786"/>
+</suite>
+<status status="PASS" start="2026-07-30T18:48:31.858232" elapsed="4.093385"/>
+</suite>
+<statistics>
+<total>
+<stat pass="1" fail="0" skip="0">All Tests</stat>
+</total>
+<tag>
+</tag>
+<suite>
+<stat name="Rf-Dojos" id="s1" pass="1" fail="0" skip="0">Rf-Dojos</stat>
+<stat name="Test" id="s1-s1" pass="1" fail="0" skip="0">Rf-Dojos.Test</stat>
+<stat name="Dojo-01-Webtesting" id="s1-s1-s1" pass="1" fail="0" skip="0">Rf-Dojos.Test.Dojo-01-Webtesting</stat>
+</suite>
+</statistics>
+<errors>
+</errors>
+</robot>
