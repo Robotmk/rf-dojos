@@ -108,3 +108,8 @@ Für ein **neues Dojo**:
 - [ ] Buddy-Paare sind final festgelegt (nicht öffentlich sichtbar machen,
       nur für dich als Organizer relevant)
 - [ ] Regelwerk (siehe `TEILNEHMER.md`) ausgedruckt oder auf Screen bereit
+- [ ] Viewer einmal vor dem Abend im Zielbrowser öffnen (mit echtem
+      `?dojo=`-Parameter), damit die vendorten Monaco-Editor-Assets
+      (~mehrere MB, `viewer/vendor/monaco/`) bereits im Browser-Cache liegen.
+      Verhindert, dass der erste Request am Abend selbst vom Venue-WLAN
+      abhängt.
