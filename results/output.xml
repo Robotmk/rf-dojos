@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generator="Robot 7.4.2 (Python 3.13.13 on win32)" generated="2026-07-30T19:40:49.319719" rpa="false" schemaversion="5">
+<suite id="s1" name="Rf-Dojos" source="C:\Users\maximilian.sachmann\Documents\GIT\RobotFramework\rf-dojos">
+<suite id="s1-s1" name="Dojos" source="C:\Users\maximilian.sachmann\Documents\GIT\RobotFramework\rf-dojos\dojos">
+<suite id="s1-s1-s1" name="Dojo-01-Web-Testing" source="C:\Users\maximilian.sachmann\Documents\GIT\RobotFramework\rf-dojos\dojos\dojo-01-web-testing">
+<suite id="s1-s1-s1-s1" name="Submissions" source="C:\Users\maximilian.sachmann\Documents\GIT\RobotFramework\rf-dojos\dojos\dojo-01-web-testing\submissions">
+<suite id="s1-s1-s1-s1-s1" name="Maxiking203" source="C:\Users\maximilian.sachmann\Documents\GIT\RobotFramework\rf-dojos\dojos\dojo-01-web-testing\submissions\maxiking203">
+<suite id="s1-s1-s1-s1-s1-s1" name="Dojo #1 – Web Testing" source="C:\Users\maximilian.sachmann\Documents\GIT\RobotFramework\rf-dojos\dojos\dojo-01-web-testing\submissions\maxiking203\tasks.robot">
+<test id="s1-s1-s1-s1-s1-s1-t1" name="Auto Versicherung" line="17">
+<kw name="Open Website">
+<kw name="New Browser" owner="Browser">
+<msg time="2026-07-30T19:40:50.229515" level="INFO">{"browser": "firefox", "headless": false, "chromiumSandbox": false, "devtools": false, "handleSIGHUP": true, "handleSIGINT": true, "handleSIGTERM": true, "proxy": {"server": "http://px-internetweb.muenchen.de:80"}, "slowMo": 0.0, "timeout": 30000.0, "tracesDir": "C:\\Users\\maximilian.sachmann\\Documents\\GIT\\RobotFramework\\rf-dojos\\results\\browser\\traces\\temp\\7704e171-c74e-4e14-b565-672735f0298b"}</msg>
+<msg time="2026-07-30T19:40:50.550496" level="INFO">Starting Browser process C:\Users\maximilian.sachmann\Documents\uv_py_projects\robot\.venv\Lib\site-packages\Browser\wrapper\index.js using at 127.0.0.1:54671</msg>
+<msg time="2026-07-30T19:41:17.031540" level="FAIL">Could not connect to the playwright process at 127.0.0.1:54671.</msg>
+<arg>${BROWSER}</arg>
+<arg>${HEADLESS}</arg>
+<arg>proxy={"server": "http://${PROXY_IP}:${PROXY_PORT}"}</arg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Create a new playwright Browser with specified options.</doc>
+<status status="FAIL" start="2026-07-30T19:40:50.225073" elapsed="26.827681">Could not connect to the playwright process at 127.0.0.1:54671.</status>
+</kw>
+<kw name="New Page" owner="Browser">
+<arg>${URL}</arg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Open a new Page.</doc>
+<status status="NOT RUN" start="2026-07-30T19:41:17.053596" elapsed="0.000455"/>
+</kw>
+<doc>Oeffene Versicherungsformular</doc>
+<status status="FAIL" start="2026-07-30T19:40:50.223162" elapsed="26.831330">Could not connect to the playwright process at 127.0.0.1:54671.</status>
+</kw>
+<msg time="2026-07-30T19:41:17.084695" level="INFO">Starting Browser process C:\Users\maximilian.sachmann\Documents\uv_py_projects\robot\.venv\Lib\site-packages\Browser\wrapper\index.js using at 127.0.0.1:54854</msg>
+<doc>Formular fuer Autoverischerung pruefen</doc>
+<status status="FAIL" start="2026-07-30T19:40:50.183348" elapsed="26.871905">Could not connect to the playwright process at 127.0.0.1:54671.</status>
+</test>
+<doc>Angebots-Rechner der Versicherung testet, indem er die Formularseiten ausfüllt und die Bestätigung überprüft</doc>
+<status status="FAIL" start="2026-07-30T19:40:49.699734" elapsed="50.516451"/>
+</suite>
+<status status="FAIL" start="2026-07-30T19:40:49.646136" elapsed="73.432711"/>
+</suite>
+<status status="FAIL" start="2026-07-30T19:40:49.626706" elapsed="73.499849"/>
+</suite>
+<status status="FAIL" start="2026-07-30T19:40:49.527069" elapsed="73.670621"/>
+</suite>
+<status status="FAIL" start="2026-07-30T19:40:49.501492" elapsed="73.716232"/>
+</suite>
+<status status="FAIL" start="2026-07-30T19:40:49.334356" elapsed="73.901414"/>
+</suite>
+<statistics>
+<total>
+<stat pass="0" fail="1" skip="0">All Tests</stat>
+</total>
+<tag>
+</tag>
+<suite>
+<stat name="Rf-Dojos" id="s1" pass="0" fail="1" skip="0">Rf-Dojos</stat>
+<stat name="Dojos" id="s1-s1" pass="0" fail="1" skip="0">Rf-Dojos.Dojos</stat>
+<stat name="Dojo-01-Web-Testing" id="s1-s1-s1" pass="0" fail="1" skip="0">Rf-Dojos.Dojos.Dojo-01-Web-Testing</stat>
+<stat name="Submissions" id="s1-s1-s1-s1" pass="0" fail="1" skip="0">Rf-Dojos.Dojos.Dojo-01-Web-Testing.Submissions</stat>
+<stat name="Maxiking203" id="s1-s1-s1-s1-s1" pass="0" fail="1" skip="0">Rf-Dojos.Dojos.Dojo-01-Web-Testing.Submissions.Maxiking203</stat>
+<stat name="Dojo #1 – Web Testing" id="s1-s1-s1-s1-s1-s1" pass="0" fail="1" skip="0">Rf-Dojos.Dojos.Dojo-01-Web-Testing.Submissions.Maxiking203.Dojo #1 – Web Testing</stat>
+</suite>
+</statistics>
+<errors>
+<msg time="2026-07-30T19:41:40.199247" level="ERROR">Calling method '_end_test' of listener 'Browser' failed: Could not connect to the playwright process at 127.0.0.1:54854.</msg>
+<msg time="2026-07-30T19:42:03.061540" level="ERROR">Calling method '_end_suite' of listener 'Browser' failed: Could not connect to the playwright process at 127.0.0.1:55033.</msg>
+</errors>
+</robot>
