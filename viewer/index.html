@@ -37,6 +37,7 @@
   dialog#token-dialog { border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; }
   dialog#token-dialog input { width: 320px; padding: 0.4rem; }
   .search-hit { background: #fff8c5; }
+  #dojo-select { margin-left: auto; padding: 0.3rem 0.5rem; }
   #file-view { display: flex; height: 100%; }
   #explorer { width: 220px; border-right: 1px solid var(--border); overflow-y: auto; padding: 0.5rem; flex-shrink: 0; }
   #explorer ul { list-style: none; margin: 0; padding-left: 1rem; }
@@ -58,7 +59,10 @@
   <img class="logo" src="logo.png" alt="RFUGM Logo">
   <h1>RFUGM Dojo Viewer</h1>
   <span id="dojo-title"></span>
-  <a href="../" style="margin-left:auto;">Zur Startseite</a>
+  <select id="dojo-select">
+    <option value="">Dojo wählen…</option>
+  </select>
+  <a href="../">Zur Startseite</a>
   <button id="change-token-btn" type="button">Token ändern</button>
 </header>
 <div id="error-banner" style="display:none; background:#ffebe9; color:#82071e; padding:0.5rem 1rem; border-bottom:1px solid #ffc1c1;"></div>
@@ -109,9 +113,9 @@ function decodeBase64Utf8(b64) {
 }
 
 let monacoEditor = null;
-const modelCache = new Map(); // key: `${branch}::${relPath}` -> monaco.editor.ITextModel
-const fileContentCache = new Map(); // key: `${branch}::${path}` -> Promise<string>
-const fileTreeCache = new Map(); // key: branch -> Promise<string[]>
+const modelCache = new Map(); // key: `${owner}::${branch}::${relPath}` -> monaco.editor.ITextModel
+const fileContentCache = new Map(); // key: `${owner}::${branch}::${path}` -> Promise<string>
+const fileTreeCache = new Map(); // key: `${owner}::${branch}` -> Promise<string[]>
 
 const LANG_BY_EXT = {
   robot: 'robotframework', resource: 'robotframework', py: 'python',
@@ -124,14 +128,14 @@ function languageForPath(relPath) {
   return LANG_BY_EXT[ext] || 'plaintext';
 }
 
-function loadFileContentCached(path, branch) {
-  const key = `${branch}::${path}`;
+function loadFileContentCached(owner, path, branch) {
+  const key = `${owner}::${branch}::${path}`;
   if (!fileContentCache.has(key)) {
     // Don't let a rejected promise poison the cache forever - e.g. GitHub's
     // Contents API 403s on blobs over ~1MB (accidentally committed
     // output.xml/log.html). Remove the entry on failure so a later attempt
     // (or a blacklist fix) can retry instead of being stuck for the session.
-    fileContentCache.set(key, loadFileContent(path, branch).catch((err) => {
+    fileContentCache.set(key, loadFileContent(owner, path, branch).catch((err) => {
       fileContentCache.delete(key);
       throw err;
     }));
@@ -139,23 +143,24 @@ function loadFileContentCached(path, branch) {
   return fileContentCache.get(key);
 }
 
-function loadFileTreeCached(branch) {
-  if (!fileTreeCache.has(branch)) {
-    fileTreeCache.set(branch, loadFileTree(branch).catch((err) => {
-      fileTreeCache.delete(branch);
+function loadFileTreeCached(owner, branch) {
+  const key = `${owner}::${branch}`;
+  if (!fileTreeCache.has(key)) {
+    fileTreeCache.set(key, loadFileTree(owner, branch).catch((err) => {
+      fileTreeCache.delete(key);
       throw err;
     }));
   }
-  return fileTreeCache.get(branch);
+  return fileTreeCache.get(key);
 }
 
-async function computeSearchMatchingPaths(visibleRelPaths, absoluteByRel, branch, searchPattern) {
+async function computeSearchMatchingPaths(owner, visibleRelPaths, absoluteByRel, branch, searchPattern) {
   if (!searchPattern) return new Set();
   // Each file's fetch is tolerated independently - one unreadable/oversized
   // file should just fail to get a search badge, not blank the whole
   // explorer/tabs/editor via a rejected Promise.all.
   const results = await Promise.all(visibleRelPaths.map((relPath) =>
-    loadFileContentCached(absoluteByRel.get(relPath), branch)
+    loadFileContentCached(owner, absoluteByRel.get(relPath), branch)
       .then((content) => (contentMatchesSearch(content, searchPattern) ? relPath : null))
       .catch(() => null)
   ));
@@ -217,18 +222,18 @@ function applySearchDecorations(searchPattern) {
   lastRevealedPatternByModel.set(model, searchPattern);
 }
 
-async function getModelFor(relPath, absolutePath, branch) {
-  const key = `${branch}::${relPath}`;
+async function getModelFor(owner, relPath, absolutePath, branch) {
+  const key = `${owner}::${branch}::${relPath}`;
   let model = modelCache.get(key);
   if (!model) {
-    model = monaco.editor.createModel(await loadFileContentCached(absolutePath, branch), languageForPath(relPath));
+    model = monaco.editor.createModel(await loadFileContentCached(owner, absolutePath, branch), languageForPath(relPath));
     modelCache.set(key, model);
   }
   return model;
 }
 
-async function openFileInEditor(relPath, absolutePath, branch) {
-  const model = await getModelFor(relPath, absolutePath, branch);
+async function openFileInEditor(owner, relPath, absolutePath, branch) {
+  const model = await getModelFor(owner, relPath, absolutePath, branch);
   ensureEditorInstance().setModel(model);
 }
 
@@ -460,6 +465,10 @@ async function loadOpenPRs(dojoId) {
     .map((pr) => ({
       username: pr.title.slice(titlePrefix.length).trim(),
       branch: pr.head.ref,
+      // Teilnehmer forken das Repo (siehe TEILNEHMER.md) - der Branch liegt
+      // also im Fork, nicht im Original-Repo. Ohne head.repo (z.B. Fork
+      // gelöscht) bleibt nur der Fallback auf den Original-Owner.
+      repoOwner: pr.head.repo ? pr.head.repo.owner.login : owner,
       number: pr.number,
     }))
     .sort((a, b) => a.username.localeCompare(b.username));
@@ -508,9 +517,10 @@ function renderExplorerTree(container, relPaths, activeRelPath, matchingRelPaths
   container.appendChild(ul);
 }
 
-async function loadFileTree(branch) {
-  const owner = getRepoOwner();
-  const data = await githubFetch(`/repos/${owner}/${REPO_NAME}/git/trees/${branch}?recursive=1`);
+async function loadFileTree(owner, branch) {
+  // Branch-Namen enthalten laut Workflow ein "/" (<dojo-id>/<username>) - muss
+  // im Pfad-Segment encodiert werden, sonst schlägt die Ref-Auflösung fehl.
+  const data = await githubFetch(`/repos/${owner}/${REPO_NAME}/git/trees/${encodeURIComponent(branch)}?recursive=1`);
   return data.tree.filter((entry) => entry.type === 'blob').map((entry) => entry.path);
 }
 
@@ -555,9 +565,8 @@ function contentMatchesSearch(content, searchPattern) {
   return new RegExp(searchPattern, 'i').test(content);
 }
 
-async function loadFileContent(path, branch) {
-  const owner = getRepoOwner();
-  const data = await githubFetch(`/repos/${owner}/${REPO_NAME}/contents/${path}?ref=${branch}`);
+async function loadFileContent(owner, path, branch) {
+  const data = await githubFetch(`/repos/${owner}/${REPO_NAME}/contents/${path}?ref=${encodeURIComponent(branch)}`);
   return decodeBase64Utf8(data.content);
 }
 
@@ -587,7 +596,7 @@ async function renderContent() {
   if (!round || !pr) { showContentMessage(''); return; }
   try {
     const prefix = `dojos/${state.dojoId}/submissions/${pr.username}/`;
-    const paths = (await loadFileTreeCached(pr.branch)).filter((p) => p.startsWith(prefix));
+    const paths = (await loadFileTreeCached(pr.repoOwner, pr.branch)).filter((p) => p.startsWith(prefix));
     if (seq !== renderSeq) return; // a newer render superseded this one; abandon silently
     if (!paths.length) {
       showContentMessage(`Keine Dateien unter ${prefix} gefunden.`);
@@ -625,7 +634,7 @@ async function renderContent() {
       }
       renderTabBar();
 
-      const matchingRelPaths = await computeSearchMatchingPaths(visibleRelPaths, absoluteByRel, pr.branch, round.search);
+      const matchingRelPaths = await computeSearchMatchingPaths(pr.repoOwner, visibleRelPaths, absoluteByRel, pr.branch, round.search);
       if (seq !== renderSeq) return;
       renderExplorerTree(document.getElementById('explorer'), visibleRelPaths, state.activeTabPath, matchingRelPaths, (relPath) => {
         openTab(relPath);
@@ -638,7 +647,7 @@ async function renderContent() {
         // (moderator flipping to another participant while this one's file
         // is still loading on a cold cache) can be detected and abandoned
         // BEFORE we clobber the editor with stale content via setModel().
-        const model = await getModelFor(state.activeTabPath, absoluteByRel.get(state.activeTabPath), pr.branch);
+        const model = await getModelFor(pr.repoOwner, state.activeTabPath, absoluteByRel.get(state.activeTabPath), pr.branch);
         if (seq !== renderSeq) return;
         ensureEditorInstance().setModel(model);
         applySearchDecorations(round.search);
@@ -685,19 +694,73 @@ function renderNoDojoMessage() {
   // touching #content.innerHTML directly, so the persistent-DOM-host
   // invariant holds everywhere in this file, not just in renderContent().
   const messageEl = document.getElementById('content-message');
-  messageEl.innerHTML = 'Kein Dojo ausgewählt. Die Übersicht aller Dojos steht auf der <a href="../">Startseite</a>.';
+  messageEl.textContent = 'Kein Dojo ausgewählt. Wähle oben eines aus.';
   messageEl.style.display = '';
   document.getElementById('tree-view').style.display = 'none';
   document.getElementById('file-view').style.display = 'none';
 }
 
+function navigateToDojo(dojoId) {
+  const params = new URLSearchParams(window.location.search);
+  params.set('dojo', dojoId);
+  window.location.search = params.toString();
+}
+
+async function loadDojoList() {
+  const owner = getRepoOwner();
+  if (!owner) {
+    throw new Error('Repo-Owner unbekannt — bitte ?owner=<github-user> an die URL anhängen.');
+  }
+  const entries = await githubFetch(`/repos/${owner}/${REPO_NAME}/contents/dojos`);
+  const dirs = entries.filter((entry) => entry.type === 'dir');
+  const dojos = [];
+  for (const dir of dirs) {
+    let title = dir.name;
+    try {
+      const data = await githubFetch(`/repos/${owner}/${REPO_NAME}/contents/dojos/${dir.name}/config.yaml`);
+      const config = jsyaml.load(decodeBase64Utf8(data.content));
+      if (config?.dojo?.title) title = config.dojo.title;
+    } catch (err) {
+      console.warn(`Konnte config.yaml für ${dir.name} nicht laden:`, err);
+    }
+    dojos.push({ id: dir.name, title });
+  }
+  dojos.sort((a, b) => a.id.localeCompare(b.id));
+  return dojos;
+}
+
+function renderDojoSelect(dojos) {
+  const select = document.getElementById('dojo-select');
+  select.innerHTML = '';
+  const placeholder = document.createElement('option');
+  placeholder.value = '';
+  placeholder.textContent = dojos.length ? 'Dojo wählen…' : 'Keine Dojos gefunden';
+  select.appendChild(placeholder);
+  dojos.forEach((dojo) => {
+    const opt = document.createElement('option');
+    opt.value = dojo.id;
+    opt.textContent = dojo.title;
+    if (dojo.id === state.dojoId) opt.selected = true;
+    select.appendChild(opt);
+  });
+}
+
+document.getElementById('dojo-select').addEventListener('change', (event) => {
+  if (event.target.value) navigateToDojo(event.target.value);
+});
+
 async function init() {
+  await ensureToken();
+  try {
+    renderDojoSelect(await loadDojoList());
+  } catch (err) {
+    console.warn('Konnte Dojo-Liste nicht laden:', err);
+  }
   if (!state.dojoId) {
     renderNoDojoMessage();
     return;
   }
   try {
-    await ensureToken();
     await loadConfig(state.dojoId);
     await loadOpenPRs(state.dojoId);
     clearError();
