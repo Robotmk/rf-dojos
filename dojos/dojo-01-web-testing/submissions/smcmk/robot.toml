@@ -1,0 +1,5 @@
+[env]
+
+# Used in the robot file to determine whether headless should be true or false. 
+# Fallback is the value of this variable => show the UI
+ROBOTMK_HEADLESS_HOST="false"
