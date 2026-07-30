@@ -3,6 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <title>RFUGM Dojo Viewer</title>
+<!--
+  Load order matters here: js-yaml's UMD wrapper only exposes the global
+  `jsyaml` when no AMD loader is present. Monaco's loader.js defines
+  `define.amd`, which makes js-yaml silently skip the global export instead.
+  js-yaml MUST stay listed before loader.js, or config loading breaks with
+  no visible error.
+-->
 <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
 <script src="vendor/monaco/min/vs/loader.js"></script>
 <script src="robotframework-language.js"></script>
@@ -104,21 +111,54 @@ function decodeBase64Utf8(b64) {
 let monacoEditor = null;
 const modelCache = new Map(); // key: `${branch}::${relPath}` -> monaco.editor.ITextModel
 const fileContentCache = new Map(); // key: `${branch}::${path}` -> Promise<string>
+const fileTreeCache = new Map(); // key: branch -> Promise<string[]>
+
+const LANG_BY_EXT = {
+  robot: 'robotframework', resource: 'robotframework', py: 'python',
+  yaml: 'yaml', yml: 'yaml', json: 'json', md: 'markdown',
+  xml: 'xml', html: 'html', txt: 'plaintext',
+};
+
+function languageForPath(relPath) {
+  const ext = relPath.split('.').pop().toLowerCase();
+  return LANG_BY_EXT[ext] || 'plaintext';
+}
 
 function loadFileContentCached(path, branch) {
   const key = `${branch}::${path}`;
   if (!fileContentCache.has(key)) {
-    fileContentCache.set(key, loadFileContent(path, branch));
+    // Don't let a rejected promise poison the cache forever - e.g. GitHub's
+    // Contents API 403s on blobs over ~1MB (accidentally committed
+    // output.xml/log.html). Remove the entry on failure so a later attempt
+    // (or a blacklist fix) can retry instead of being stuck for the session.
+    fileContentCache.set(key, loadFileContent(path, branch).catch((err) => {
+      fileContentCache.delete(key);
+      throw err;
+    }));
   }
   return fileContentCache.get(key);
 }
 
+function loadFileTreeCached(branch) {
+  if (!fileTreeCache.has(branch)) {
+    fileTreeCache.set(branch, loadFileTree(branch).catch((err) => {
+      fileTreeCache.delete(branch);
+      throw err;
+    }));
+  }
+  return fileTreeCache.get(branch);
+}
+
 async function computeSearchMatchingPaths(visibleRelPaths, absoluteByRel, branch, searchPattern) {
   if (!searchPattern) return new Set();
-  const results = await Promise.all(visibleRelPaths.map(async (relPath) => {
-    const content = await loadFileContentCached(absoluteByRel.get(relPath), branch);
-    return contentMatchesSearch(content, searchPattern) ? relPath : null;
-  }));
+  // Each file's fetch is tolerated independently - one unreadable/oversized
+  // file should just fail to get a search badge, not blank the whole
+  // explorer/tabs/editor via a rejected Promise.all.
+  const results = await Promise.all(visibleRelPaths.map((relPath) =>
+    loadFileContentCached(absoluteByRel.get(relPath), branch)
+      .then((content) => (contentMatchesSearch(content, searchPattern) ? relPath : null))
+      .catch(() => null)
+  ));
   return new Set(results.filter(Boolean));
 }
 
@@ -130,10 +170,26 @@ function ensureEditorInstance() {
     automaticLayout: true,
     minimap: { enabled: false },
   });
+  // The editor is read-only, so losing in-editor arrow-key cursor movement
+  // (while it has focus) is an accepted trade-off in favor of the
+  // moderator's participant/round navigation always working, even after
+  // clicking inside the editor. Mouse click/drag and Ctrl+F still work.
+  monacoEditor.addCommand(monaco.KeyCode.LeftArrow, () => goToPrevParticipant());
+  monacoEditor.addCommand(monaco.KeyCode.RightArrow, () => goToNextParticipant());
+  monacoEditor.addCommand(monaco.KeyCode.UpArrow, () => goToPrevRound());
+  monacoEditor.addCommand(monaco.KeyCode.DownArrow, () => goToNextRound());
   return monacoEditor;
 }
 
 const searchDecorationIdsByModel = new WeakMap(); // model -> decoration id array (per-model, not global)
+// model -> the searchPattern that last triggered a revealRangeInCenter for
+// THAT model. Deliberately per-model (not a single last-applied pair):
+// switching to another tab and back reuses the same cached model instance,
+// so a single global "last applied" value would get overwritten by the
+// intermediate tab and still incorrectly re-reveal on return. Per-model
+// tracking means a given file's "already revealed once" memory survives
+// visits to other tabs in between.
+const lastRevealedPatternByModel = new WeakMap();
 
 function applySearchDecorations(searchPattern) {
   const editor = ensureEditorInstance();
@@ -150,17 +206,29 @@ function applySearchDecorations(searchPattern) {
     options: { inlineClassName: 'search-hit' },
   })));
   searchDecorationIdsByModel.set(model, newIds);
-  if (matches.length) editor.revealRangeInCenter(matches[0].range);
+  // Only snap the viewport to the first match the first time this exact
+  // (model, pattern) pair is applied. Re-renders that land back on the same
+  // model with the same pattern - e.g. clicking a different tab and back,
+  // or closing an unrelated tab - must not discard the moderator's scroll
+  // position within this file.
+  if (matches.length && lastRevealedPatternByModel.get(model) !== searchPattern) {
+    editor.revealRangeInCenter(matches[0].range);
+  }
+  lastRevealedPatternByModel.set(model, searchPattern);
 }
 
-async function openFileInEditor(relPath, absolutePath, branch) {
+async function getModelFor(relPath, absolutePath, branch) {
   const key = `${branch}::${relPath}`;
   let model = modelCache.get(key);
   if (!model) {
-    const content = await loadFileContentCached(absolutePath, branch);
-    model = monaco.editor.createModel(content, 'robotframework');
+    model = monaco.editor.createModel(await loadFileContentCached(absolutePath, branch), languageForPath(relPath));
     modelCache.set(key, model);
   }
+  return model;
+}
+
+async function openFileInEditor(relPath, absolutePath, branch) {
+  const model = await getModelFor(relPath, absolutePath, branch);
   ensureEditorInstance().setModel(model);
 }
 
@@ -241,6 +309,30 @@ function selectRound(index) {
   state.activeTabPath = null;
   state.needsDefaultOpen = true;
   render();
+}
+
+// Shared by the document-level keydown handler and the Monaco editor's own
+// key bindings (see ensureEditorInstance) so both stay in sync.
+function goToNextParticipant() {
+  if (!state.prs.length) return;
+  selectParticipant((state.currentParticipantIndex + 1) % state.prs.length);
+}
+
+function goToPrevParticipant() {
+  if (!state.prs.length) return;
+  selectParticipant((state.currentParticipantIndex - 1 + state.prs.length) % state.prs.length);
+}
+
+function goToNextRound() {
+  const n = (state.config?.rounds || []).length;
+  if (!n) return;
+  selectRound((state.currentRoundIndex + 1) % n);
+}
+
+function goToPrevRound() {
+  const n = (state.config?.rounds || []).length;
+  if (!n) return;
+  selectRound((state.currentRoundIndex - 1 + n) % n);
 }
 
 function renderRoundsNav() {
@@ -388,7 +480,6 @@ function buildTreeFromPaths(paths) {
 }
 
 function renderExplorerNode(name, subtree, fullRelPath, activeRelPath, matchingRelPaths, onSelect) {
-  const escapedName = escapeHtml(name);
   if (subtree === null) {
     const li = document.createElement('li');
     li.className = 'file' + (fullRelPath === activeRelPath ? ' active' : '');
@@ -496,7 +587,7 @@ async function renderContent() {
   if (!round || !pr) { showContentMessage(''); return; }
   try {
     const prefix = `dojos/${state.dojoId}/submissions/${pr.username}/`;
-    const paths = (await loadFileTree(pr.branch)).filter((p) => p.startsWith(prefix));
+    const paths = (await loadFileTreeCached(pr.branch)).filter((p) => p.startsWith(prefix));
     if (seq !== renderSeq) return; // a newer render superseded this one; abandon silently
     if (!paths.length) {
       showContentMessage(`Keine Dateien unter ${prefix} gefunden.`);
@@ -522,7 +613,14 @@ async function renderContent() {
       if (state.needsDefaultOpen) {
         const defaultPaths = resolveDefaultOpenPaths(relPaths, round);
         defaultPaths.forEach((relPath) => openTab(relPath));
-        if (!state.openTabs.length && visibleRelPaths.length) openTab(visibleRelPaths[0]);
+        if (defaultPaths.length) {
+          // Make the projector-visible starting file deterministic: always
+          // the FIRST default_open match, not whichever one openTab() last
+          // touched (which depended on incidental git-tree ordering).
+          state.activeTabPath = state.openTabs[0];
+        } else if (!state.openTabs.length && visibleRelPaths.length) {
+          openTab(visibleRelPaths[0]);
+        }
         state.needsDefaultOpen = false;
       }
       renderTabBar();
@@ -536,7 +634,13 @@ async function renderContent() {
       });
 
       if (state.activeTabPath) {
-        await openFileInEditor(state.activeTabPath, absoluteByRel.get(state.activeTabPath), pr.branch);
+        // Split fetch/create-model from attach-to-editor so a newer render
+        // (moderator flipping to another participant while this one's file
+        // is still loading on a cold cache) can be detected and abandoned
+        // BEFORE we clobber the editor with stale content via setModel().
+        const model = await getModelFor(state.activeTabPath, absoluteByRel.get(state.activeTabPath), pr.branch);
+        if (seq !== renderSeq) return;
+        ensureEditorInstance().setModel(model);
         applySearchDecorations(round.search);
       } else {
         ensureEditorInstance().setModel(null);
@@ -552,16 +656,14 @@ async function renderContent() {
 
 function handleKeydown(event) {
   if (!state.config) return;
-  const roundCount = (state.config.rounds || []).length;
-  const participantCount = state.prs.length;
-  if (event.key === 'ArrowRight' && participantCount) {
-    selectParticipant((state.currentParticipantIndex + 1) % participantCount);
-  } else if (event.key === 'ArrowLeft' && participantCount) {
-    selectParticipant((state.currentParticipantIndex - 1 + participantCount) % participantCount);
-  } else if (event.key === 'ArrowDown' && roundCount) {
-    selectRound((state.currentRoundIndex + 1) % roundCount);
-  } else if (event.key === 'ArrowUp' && roundCount) {
-    selectRound((state.currentRoundIndex - 1 + roundCount) % roundCount);
+  if (event.key === 'ArrowRight') {
+    goToNextParticipant();
+  } else if (event.key === 'ArrowLeft') {
+    goToPrevParticipant();
+  } else if (event.key === 'ArrowDown') {
+    goToNextRound();
+  } else if (event.key === 'ArrowUp') {
+    goToPrevRound();
   }
 }
 
@@ -579,11 +681,14 @@ function clearError() {
 }
 
 function renderNoDojoMessage() {
-  const content = document.getElementById('content');
-  content.innerHTML = '';
-  const p = document.createElement('p');
-  p.innerHTML = 'Kein Dojo ausgewählt. Die Übersicht aller Dojos steht auf der <a href="../">Startseite</a>.';
-  content.appendChild(p);
+  // Uses the same content-message host as showContentMessage() rather than
+  // touching #content.innerHTML directly, so the persistent-DOM-host
+  // invariant holds everywhere in this file, not just in renderContent().
+  const messageEl = document.getElementById('content-message');
+  messageEl.innerHTML = 'Kein Dojo ausgewählt. Die Übersicht aller Dojos steht auf der <a href="../">Startseite</a>.';
+  messageEl.style.display = '';
+  document.getElementById('tree-view').style.display = 'none';
+  document.getElementById('file-view').style.display = 'none';
 }
 
 async function init() {
@@ -607,11 +712,17 @@ async function init() {
   }
 }
 
-require.config({ paths: { vs: 'vendor/monaco/min/vs' } });
-require(['vs/editor/editor.main'], function () {
-  registerRobotFrameworkLanguage(monaco);
-  init();
-});
+if (typeof require === 'undefined') {
+  showError('Monaco-Editor-Assets konnten nicht geladen werden (vendor/monaco/...). Seite neu laden.');
+} else {
+  require.config({ paths: { vs: 'vendor/monaco/min/vs' } });
+  require(['vs/editor/editor.main'], function () {
+    registerRobotFrameworkLanguage(monaco);
+    init();
+  }, function (err) {
+    showError(`Monaco konnte nicht initialisiert werden: ${err.message}`);
+  });
+}
 </script>
 </body>
 </html>
