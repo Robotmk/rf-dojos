@@ -63,7 +63,7 @@ Implementiere nun einen Robot-Framework-Test, der den Angebots-Rechner der Versi
   - Username: max.mustermann
   - Password: SecretPassword123!
   - Kommentar: xxx
-  - Abschicken, warten auf Bestätiigung
+  - Abschicken, warten auf Meldung "*Sending e-mail success!*"
 
 ## Eingebaute Challenges
 
