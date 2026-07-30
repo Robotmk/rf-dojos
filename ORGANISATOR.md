@@ -234,6 +234,7 @@ veröffentlichen): siehe [SETUP.md](SETUP.md).
    allen Dojos im Repo – praktisch, wenn an einem Abend versehentlich das
    falsche Dojo geöffnet wurde.
 4. Tastatursteuerung: `←`/`→` = Teilnehmer wechseln, `↑`/`↓` = Runde wechseln.
+5. Der 🌙/☀️-Button schaltet die gesamte Oberfläche zwischen hellem und dunklem Theme um (Auswahl bleibt im Browser gespeichert).
 
 Öffnest du den Viewer ohne `?dojo=`, zeigt das Dropdown alle Dojos zur Auswahl;
 zusätzlich führt „Zur Startseite" zurück zur [Startseite](README.md).

@@ -53,6 +53,8 @@ function registerRobotFrameworkLanguage(monaco) {
       { token: 'comment', foreground: '8b949e', fontStyle: 'italic' },
       { token: 'entity.name.testcase', foreground: 'ffa657', fontStyle: 'bold' },
     ],
-    colors: {},
+    colors: {
+      'editor.background': '#0d1117',
+    },
   });
 }
