@@ -6,8 +6,14 @@ function registerRobotFrameworkLanguage(monaco) {
       root: [
         // *** Settings ***, *** Test Cases ***, *** Keywords ***, *** Variables ***, *** Tasks ***, *** Comments ***
         [/^\*{3}\s*(Settings|Variables|Test Cases|Tasks|Keywords|Comments)\s*\*{3}.*$/, 'keyword.section'],
-        // Full-line comments
-        [/^#.*$/, 'comment'],
+        // Comments - both full-line (column 0) and indented/trailing ones,
+        // which are the overwhelmingly common form inside test cases/keywords.
+        [/#.*$/, 'comment'],
+        // Test-case/keyword-level settings, e.g. [Documentation], [Tags],
+        // [Setup], [Teardown], [Arguments], [Return]. Checked before the
+        // generic column-0 name rule below so these don't get mis-tokenized
+        // as test case/keyword names.
+        [/^\s*\[[A-Za-z ]+\]/, 'keyword.setting'],
         // Variable syntax: ${scalar}, @{list}, &{dict}
         [/[$@&]\{[^}]*\}/, 'variable'],
         // Settings-section keywords (Library, Resource, Suite Setup, ...)
@@ -16,7 +22,10 @@ function registerRobotFrameworkLanguage(monaco) {
         [/^\S.*?(?=(\s{2,}|\t|$))/, 'entity.name.testcase'],
         // Column separators (2+ spaces or a tab, Robot Framework's plain-text format)
         [/\s{2,}|\t/, 'white'],
-        [/.*$/, 'text'],
+        // Rest-of-cell text. Stops before a '#' (instead of greedily eating
+        // to end of line) so a trailing comment on the same line still gets
+        // picked up by the comment rule above on the next tokenizer pass.
+        [/[^#]+/, 'text'],
       ],
     },
   });
