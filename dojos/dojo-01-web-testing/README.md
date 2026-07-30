@@ -12,7 +12,7 @@ Regelwerk stehen in der [Anleitung für Teilnehmer](../../TEILNEHMER.md).
 **Für dieses Dojo gilt:**
 
 - Dojo-ID: `dojo-01-web-testing`
-- PR-Titel: `[dojo-01-web-testing] [dein-github-username]`
+- PR-Titel: `[dojo-01-web-testing] <dein-github-username>` (nur die Dojo-ID in eckigen Klammern, Username **ohne** Klammern), z. B. `[dojo-01-web-testing] simonmeggle`
 
 ## Deine Aufgaben
 
