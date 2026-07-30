@@ -5,12 +5,16 @@
         "dockerfile": "Dockerfile"
     },
     "features": {
-        "ghcr.io/devcontainers/features/python:1": {
+        "ghcr.io/devcontainers/features/python": {
             "version": "3.12"
         },
-        "ghcr.io/devcontainers/features/node:1": {
+        "ghcr.io/devcontainers/features/node": {
             "version": "lts"
         }
+    },
+    "remoteEnv": {
+        "VIRTUAL_ENV": "${containerWorkspaceFolder}/.venv",
+        "PATH": "${containerWorkspaceFolder}/.venv/bin:${containerEnv:PATH}"
     },
     "customizations": {
         "vscode": {
@@ -35,6 +39,5 @@
                 ]
             }
         }
-    },
-    "postCreateCommand": "pip install uv && uv venv && uv pip install -e '.[dev]' && .venv/bin/rfbrowser init && .venv/bin/pre-commit install"
+    }
 }
